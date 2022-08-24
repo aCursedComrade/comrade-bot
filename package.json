@@ -1,0 +1,18 @@
+{
+  "name": "infosec-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./main.js",
+  "scripts": {
+    "start": "node .",
+    "register": "node ./register.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "discord.js": "^14.3.0",
+    "dotenv": "^16.0.1"
+  }
+}
