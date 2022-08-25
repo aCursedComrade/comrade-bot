@@ -1,40 +1,48 @@
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const fs = require('node:fs');
-const path = require('node:path');
-require('dotenv').config();
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+import { Collection } from 'discord.js';
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import bot_client from './bot_client.js';
+import 'dotenv/config';
 
 // Dynamically calling commands
-client.commands = new Collection();
-const cmdPath = path.join(__dirname, 'commands');
-const cmdFiles = fs.readdirSync(cmdPath).filter(file => file.endsWith('.js'));
-for (const file of cmdFiles) {
-  const filePath = path.join(cmdPath, file);
-  const command = require(filePath);
-  client.commands.set(command.data.name, command);
-}
+bot_client.commands = new Collection();
+const cmdPath = join('commands');
+const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
+(async () => {
+  try {
+    for (const file of cmdFiles) {
+      const filePath = join(cmdPath, file);
+      const { default: cmd_data, execute } = await import(`./${filePath}`);
+      bot_client.commands.set(cmd_data.name, execute);
+    }
+    console.log('Successfully loaded all commands.');
+  }
+  catch (error) {
+    console.error(error);
+  }
+})();
 
 // Command handlers
-client.on('interactionCreate', async interaction => {
+bot_client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
-  const command = client.commands.get(interaction.commandName);
+  const command = bot_client.commands.get(interaction.commandName);
   if (!command) return;
   try {
-    await command.execute(interaction);
+    await command(interaction);
   }
   catch (error) {
     console.error(error);
     if (interaction.deferred) {
-      await interaction.editReply('Bot ran into a problem :pensive:');
+      await interaction.editReply({ content: 'Bot ran into a problem :pensive: ```json\n' + error + '```' });
     }
     else {
-      await interaction.reply('Bot ran into a problem :pensive:');
+      await interaction.reply({ content: 'Bot ran into a problem :pensive: ```json\n' + error + '```' });
     }
   }
 });
 
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+bot_client.on('ready', () => {
+  console.log(`Logged in as ${bot_client.user.tag}!`);
 });
 
-client.login(process.env.CLIENT_TOKEN);
+bot_client.login(process.env.TOKEN);
