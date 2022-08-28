@@ -2,7 +2,9 @@ import { Collection } from 'discord.js';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import bot_client from './bot_client.js';
+import startserver from './server/server.js';
 import 'dotenv/config';
+startserver();
 
 // Dynamically calling commands
 bot_client.commands = new Collection();
