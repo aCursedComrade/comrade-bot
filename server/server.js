@@ -1,6 +1,6 @@
 import http from 'http';
 
-const host = 'localhost';
+const host = '0.0.0.0';
 const port = '8080';
 
 // Simple server to play around with, not associated with the bot yet
