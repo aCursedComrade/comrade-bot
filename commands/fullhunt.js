@@ -1,9 +1,5 @@
 import { SlashCommandBuilder, AttachmentBuilder } from 'discord.js';
-import { writeFile, unlink } from 'fs';
 import { get_fullhunt } from '../functions/get_fullhunt.js';
-
-// Relative to main.js
-const outFile = './fullhunt.json';
 
 const data = new SlashCommandBuilder()
   .setName('fullhunt')
@@ -26,17 +22,12 @@ export async function execute(interaction) {
   const method = interaction.options.getString('query');
   const target = interaction.options.getString('host');
   const fh_data = JSON.stringify(await get_fullhunt(method, target), null, '  ');
-  writeFile(outFile, fh_data, (error) => {
-    if (error) {console.error(error);}
-  });
-  const file = new AttachmentBuilder(outFile);
+  const file_buf = Buffer.from(fh_data, 'latin1');
+  const file = new AttachmentBuilder(file_buf, { name: 'fullhunt.json' });
   await interaction.editReply({
     files: [file],
   });
-  unlink(outFile, (error) => {
-    if (error) {console.error(error);}
-  });
-  console.log(`Completed '${interaction.commandName}' requested by ${interaction.user.tag}`);
+  console.log(`/${data.name} command done`);
 }
 
 export default data;

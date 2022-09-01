@@ -10,6 +10,7 @@ startserver();
 bot_client.commands = new Collection();
 const cmdPath = join('commands');
 const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
+
 (async () => {
   try {
     for (const file of cmdFiles) {

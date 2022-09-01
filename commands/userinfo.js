@@ -6,19 +6,28 @@ const data = new SlashCommandBuilder()
   .setDescription('Retrieves guild member information');
 export async function execute(interaction) {
   await interaction.deferReply();
-  bot_client.users.fetch(interaction.user.id)
+  (await bot_client.guilds.fetch(interaction.guild.id)).members.fetch(interaction.user.id)
     .then(clientUser => {
-      console.log(clientUser);
+      // console.log(clientUser);
       const embed = new EmbedBuilder()
-        .setAuthor({ name: clientUser.username })
-        .setDescription(`<@${clientUser.id}>`);
-      interaction.editReply({ content: 'Lole moment', embed: [embed.toJSON()] });
+        .setAuthor({ name: `${clientUser.user.username}#${clientUser.user.discriminator}` })
+        .setThumbnail(clientUser.displayAvatarURL({ size: 4096 }))
+        .setDescription(`${clientUser.user}`)
+        .setFields([
+          {
+            name: 'Joined at:',
+            value: `<t:${Date.parse(clientUser.joinedAt) / 1000}>`,
+          },
+        ])
+        .setFooter({ text: `ID: ${clientUser.id}` })
+        .setTimestamp(Date.now());
+      interaction.editReply({ embeds: [embed.data] });
+      console.log(`/${data.name} command done`);
     })
     .catch(error => {
       console.log(error);
       interaction.editReply('```json\n' + error + '```');
     });
-  console.log('/userinfo completed');
 }
 
 export default data;

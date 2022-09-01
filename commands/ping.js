@@ -5,7 +5,7 @@ const data = new SlashCommandBuilder()
   .setDescription('Replies with Pong!');
 export async function execute(interaction) {
   await interaction.reply('Pong!');
-  console.log(`Completed '${interaction.commandName}' requested by ${interaction.user.tag}`);
+  console.log(`/${data.name} command done`);
 }
 
 export default data;
