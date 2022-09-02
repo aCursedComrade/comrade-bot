@@ -8,8 +8,9 @@
     "node": "16.x"
   },
   "scripts": {
-    "start": "node main.js",
-    "register": "node ./register.js"
+    "start": "node ./main.js",
+    "register": "node ./register.js",
+    "server": "node ./server.js"
   },
   "keywords": [],
   "author": "",
