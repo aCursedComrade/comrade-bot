@@ -1,4 +1,5 @@
-# aCursed_Comrade
+# aCursed
+# Comrade
 #### *The Man Who Loves Tea*
 
 An undergraduate, a wannabe red teamer in training, programming hobbyist and gamer living somewhere in Sri Lanka. Currently working on studies, finding ways to wriggle into bug hunting and maybe try making another C2 (Command & Control) framework because why not.
