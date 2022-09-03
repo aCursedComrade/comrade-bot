@@ -1,5 +1,7 @@
 import axios from 'axios';
 import 'dotenv/config';
+import logger_func from '../logger.js';
+const logger = new logger_func();
 
 export async function get_fullhunt(method, target) {
   const basePath = 'https://fullhunt.io/api/v1';
@@ -34,7 +36,7 @@ export async function get_fullhunt(method, target) {
     return response.data;
   }
   catch (error) {
-    console.error(error.response.data);
+    logger.log(error.response.data);
     return error.response.data;
   }
 }

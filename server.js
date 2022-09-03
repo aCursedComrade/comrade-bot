@@ -1,11 +1,13 @@
 import http from 'http';
 import fs from 'fs';
 import { join, extname } from 'path';
+import logger_func from './logger.js';
+const logger = new logger_func();
 
 // Simple server to play around with, not associated with the bot yet
 async function server() {
   http.createServer((req, res) => {
-    console.log(`Request: ${req.url}`);
+    logger.log(`Request: ${req.url}`);
     const root = 'web';
     const file = req.url;
     let full_path = join(root, file);
@@ -39,7 +41,7 @@ async function server() {
 
     fs.readFile(full_path, (error, content) => {
       if (error) {
-        console.error(`Error on: ${full_path} | ${error.code}`);
+        logger.error(`Error on: ${full_path} | ${error.code}`);
         if (error.code == 'ENOENT') {
           res.writeHead(404);
           res.end('File not found', 'utf-8');
@@ -50,13 +52,13 @@ async function server() {
         }
       }
       else {
-        console.log(`Sent: ${full_path}`);
+        logger.log(`Sent: ${full_path}`);
         res.writeHead(200, { 'Content-Type': contentType });
         res.end(content, 'utf-8');
       }
     });
   }).listen(8080, '0.0.0.0');
-  console.log('Server started.');
+  logger.log('Server started.');
 }
 
 // server();

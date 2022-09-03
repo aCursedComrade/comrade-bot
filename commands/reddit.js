@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { get_reddit } from '../functions/get_reddit.js';
+import logger_func from '../logger.js';
+const logger = new logger_func();
 
 const data = new SlashCommandBuilder()
   .setName('reddit')
@@ -8,7 +10,7 @@ export async function execute(interaction) {
   await interaction.deferReply();
   const url = await get_reddit();
   await interaction.editReply(`${url}`);
-  console.log(`/${data.name} command done`);
+  logger.log(`/${data.name} command done`);
 }
 
 export default data;

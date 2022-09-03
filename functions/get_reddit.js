@@ -1,4 +1,6 @@
 import axios from 'axios';
+import logger_func from '../logger.js';
+const logger = new logger_func();
 
 function random_ary(object) {
   return Math.floor(Math.random() * object.length);
@@ -26,6 +28,6 @@ export async function get_reddit() {
     return posts[random_ary(posts)];
   }
   catch (error) {
-    console.error(error);
+    logger.log(error);
   }
 }

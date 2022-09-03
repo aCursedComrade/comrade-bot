@@ -3,7 +3,9 @@ import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import bot_client from './bot_client.js';
 import server from './server.js';
+import logger_func from './logger.js';
 import 'dotenv/config';
+const logger = new logger_func();
 server();
 
 // Dynamically calling commands
@@ -18,10 +20,10 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
       const { default: cmd_data, execute } = await import(`./${filePath}`);
       bot_client.commands.set(cmd_data.name, execute);
     }
-    console.log('Successfully loaded all commands.');
+    logger.log('Successfully loaded all commands.');
   }
   catch (error) {
-    console.error(error);
+    logger.log(error);
   }
 })();
 
@@ -34,7 +36,7 @@ bot_client.on('interactionCreate', async interaction => {
     await command(interaction);
   }
   catch (error) {
-    console.error(error);
+    logger.log(error);
     if (interaction.deferred) {
       await interaction.editReply({ content: 'Bot ran into a problem :pensive: ```json\n' + error + '```' });
     }
@@ -45,7 +47,7 @@ bot_client.on('interactionCreate', async interaction => {
 });
 
 bot_client.on('ready', () => {
-  console.log(`Logged in as ${bot_client.user.tag}!`);
+  logger.log(`Logged in as ${bot_client.user.tag}!`);
 });
 
 bot_client.login(process.env.TOKEN);

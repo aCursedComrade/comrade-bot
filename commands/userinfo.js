@@ -1,5 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import bot_client from '../bot_client.js';
+import logger_func from '../logger.js';
+const logger = new logger_func();
 
 const data = new SlashCommandBuilder()
   .setName('userinfo')
@@ -8,7 +10,7 @@ export async function execute(interaction) {
   await interaction.deferReply();
   (await bot_client.guilds.fetch(interaction.guild.id)).members.fetch(interaction.user.id)
     .then(clientUser => {
-      // console.log(clientUser);
+      // logger.log(clientUser);
       const embed = new EmbedBuilder()
         .setAuthor({ name: `${clientUser.user.username}#${clientUser.user.discriminator}` })
         .setThumbnail(clientUser.displayAvatarURL({ size: 4096 }))
@@ -22,10 +24,10 @@ export async function execute(interaction) {
         .setFooter({ text: `ID: ${clientUser.id}` })
         .setTimestamp(Date.now());
       interaction.editReply({ embeds: [embed.data] });
-      console.log(`/${data.name} command done`);
+      logger.log(`/${data.name} command done`);
     })
     .catch(error => {
-      console.log(error);
+      logger.log(error);
       interaction.editReply('```json\n' + error + '```');
     });
 }
