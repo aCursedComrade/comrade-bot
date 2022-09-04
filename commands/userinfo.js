@@ -27,7 +27,7 @@ export async function execute(interaction) {
       logger.log(`/${data.name} command done`);
     })
     .catch(error => {
-      logger.log(error);
+      logger.error(error);
       interaction.editReply('```json\n' + error + '```');
     });
 }

@@ -23,7 +23,7 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
     logger.log('Successfully loaded all commands.');
   }
   catch (error) {
-    logger.log(error);
+    logger.error(error);
   }
 })();
 
@@ -36,7 +36,7 @@ bot_client.on('interactionCreate', async interaction => {
     await command(interaction);
   }
   catch (error) {
-    logger.log(error);
+    logger.error(error);
     if (interaction.deferred) {
       await interaction.editReply({ content: 'Bot ran into a problem :pensive: ```json\n' + error + '```' });
     }

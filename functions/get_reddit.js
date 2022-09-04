@@ -28,6 +28,6 @@ export async function get_reddit() {
     return posts[random_ary(posts)];
   }
   catch (error) {
-    logger.log(error);
+    logger.error(error);
   }
 }
