@@ -25,6 +25,6 @@ jobs:
     - name: Install and configure the Koyeb CLI
       uses: koyeb-community/install-koyeb-cli@v2
       env:
-        api_token: "${{ secrets.KOYEB_TOKEN }}"
+        KOYEB_API_KEY: "${{ secrets.KOYEB_TOKEN }}"
     - name: Deploy to Koyeb
       run: koyeb service redeploy node-apps/discord-infosec
