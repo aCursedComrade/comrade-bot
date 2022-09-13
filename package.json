@@ -4,9 +4,6 @@
   "description": "",
   "main": "./main.js",
   "type": "module",
-  "engines": {
-    "node": "16.x"
-  },
   "scripts": {
     "start": "node ./main.js",
     "register": "node ./register.js",
