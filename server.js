@@ -44,11 +44,11 @@ async function server() {
         logger.error(`Error on: ${full_path} | ${error.code}`);
         if (error.code == 'ENOENT') {
           res.writeHead(404, { 'Content-Type': 'text/html' });
-          res.end('File not found', 'utf-8');
+          res.end('<link rel="stylesheet" href="style.css"><h1>File not found</h1>', 'utf-8');
         }
         else {
           res.writeHead(500, { 'Content-Type': 'text/html' });
-          res.end('Server ran into a problem: ' + error.code + '\n', 'utf-8');
+          res.end('<link rel="stylesheet" href="style.css"><h1>Server ran into a problem:</h1><br><pre>' + error.code + '</pre>', 'utf-8');
         }
       }
       else {

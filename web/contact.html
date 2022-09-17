@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Comrade Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="Who tf is aCursed_Comrade?">
+    <meta property="og:author" content="aCursed_Comrade">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <ul class="topnav">
+      <li><a href="index.html">Index</a></li>
+      <li><a class="active" href="contact.html">Contact Me</a></li>
+    </ul>
+    
+    <h2>Contact Me</h2>
+    <div id="content">
+      <p>Want to get in touch with me? You can do it here! Please provide a valid point of contact for me to reply back to (An e-mail is preferred).</p>
+      <form action="https://eod46s7nevwe7z1.m.pipedream.net/" method="post" name="cform" onsubmit="return(cleanup());" autocomplete="off">
+        <input type="hidden" name="type" value="contact-form">
+        <label for="contact">Alias:</label><br>
+        <input type="text" id="contact" name="contact" placeholder="Your alias/contact info" required><br><br>
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message" placeholder="Your message" required></textarea><br><br>
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+      </form>
+    </div>
+
+    <script>
+      function cleanup() {
+        document.cform.submit();
+        document.cform.reset();
+        document.getElementById("content").innerHTML = "Message sent!"
+        return false;
+      }
+    </script>
+  </body>
+</html>

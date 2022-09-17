@@ -28,4 +28,4 @@ jobs:
       with:
         api_token: "${{ secrets.KOYEB_TOKEN }}"
     - name: Deploy to Koyeb
-      run: koyeb service redeploy node-apps/discord-infosec
+      run: koyeb service redeploy node-apps/node-bot

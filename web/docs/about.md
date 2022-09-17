@@ -14,7 +14,7 @@ I can be found on:
 
 And that's about it, thanks for visiting my simple page :)
 
-![site_pic](assets/d222f2a.jpg)
+![site_pic](../assets/d222f2a.jpg)
 
 > Picture: Planetside 2 night ambience
 
