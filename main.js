@@ -8,17 +8,16 @@ import 'dotenv/config';
 const logger = new logger_func();
 server();
 
-// Dynamically calling commands
-bot_client.commands = new Collection();
+// Dynamically loading commands
+const commands = new Collection();
 const cmdPath = join('commands');
 const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
-
 (async () => {
   try {
     for (const file of cmdFiles) {
       const filePath = join(cmdPath, file);
       const { default: cmd_data, execute } = await import(`./${filePath}`);
-      bot_client.commands.set(cmd_data.name, execute);
+      commands.set(cmd_data.name, execute);
     }
     logger.log('Successfully loaded all commands.');
   }
@@ -27,10 +26,9 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
   }
 })();
 
-// Command handlers
+// Command handler
 bot_client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand()) return;
-  const command = bot_client.commands.get(interaction.commandName);
+  const command = commands.get(interaction.commandName);
   if (!command) return;
   try {
     await command(interaction);

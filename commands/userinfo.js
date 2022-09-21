@@ -5,30 +5,38 @@ const logger = new logger_func();
 
 const data = new SlashCommandBuilder()
   .setName('userinfo')
-  .setDescription('Retrieves guild member information');
+  .setDescription('Retrieves information about the user');
+/**
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
+ */
 export async function execute(interaction) {
   await interaction.deferReply();
   (await bot_client.guilds.fetch(interaction.guild.id)).members.fetch(interaction.user.id)
-    .then(clientUser => {
-      // logger.log(clientUser);
+    .then(member => {
+      // logger.log(JSON.stringify(member, null, '  '));
       const embed = new EmbedBuilder()
-        .setAuthor({ name: `${clientUser.user.username}#${clientUser.user.discriminator}` })
-        .setThumbnail(clientUser.displayAvatarURL({ size: 4096 }))
-        .setDescription(`${clientUser.user}`)
+        .setAuthor({ name: `${member.user.username}#${member.user.discriminator}` })
+        .setColor(member?.displayColor)
+        .setThumbnail(member.displayAvatarURL({ size: 4096 }))
+        .setDescription(`${member.user}`)
         .setFields([
           {
-            name: 'Joined at:',
-            value: `<t:${Date.parse(clientUser.joinedAt) / 1000}>`,
+            name: 'Joined on:',
+            value: `<t:${Date.parse(member.joinedAt) / 1000}:D>`,
+          },
+          {
+            name: 'Registered on:',
+            value: `<t:${Date.parse(member.user.createdAt) / 1000}:D>`,
           },
         ])
-        .setFooter({ text: `ID: ${clientUser.id}` })
+        .setFooter({ text: `User ID: ${member.id}` })
         .setTimestamp(Date.now());
       interaction.editReply({ embeds: [embed.data] });
       logger.log(`/${data.name} command done`);
     })
     .catch(error => {
       logger.error(error);
-      interaction.editReply('```json\n' + error + '```');
+      throw error;
     });
 }
 

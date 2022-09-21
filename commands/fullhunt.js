@@ -19,6 +19,9 @@ const data = new SlashCommandBuilder()
     .setName('host')
     .setDescription('Ex: example.com')
     .setRequired(true));
+/**
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
+ */
 export async function execute(interaction) {
   await interaction.deferReply();
   const method = interaction.options.getString('query');

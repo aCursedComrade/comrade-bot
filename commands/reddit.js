@@ -6,6 +6,9 @@ const logger = new logger_func();
 const data = new SlashCommandBuilder()
   .setName('reddit')
   .setDescription('Returns a random HOT meme from reddit');
+/**
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
+ */
 export async function execute(interaction) {
   await interaction.deferReply();
   const url = await get_reddit();
