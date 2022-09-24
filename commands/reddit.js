@@ -9,7 +9,7 @@ const data = new SlashCommandBuilder()
 /**
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
-export async function execute(interaction) {
+export async function handler(interaction) {
   await interaction.deferReply();
   const url = await get_reddit();
   await interaction.editReply(`${url}`);

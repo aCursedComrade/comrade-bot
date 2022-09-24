@@ -9,15 +9,15 @@ const logger = new logger_func();
 server();
 
 // Dynamically loading commands
-const commands = new Collection();
+const commandset = new Collection();
 const cmdPath = join('commands');
 const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
 (async () => {
   try {
     for (const file of cmdFiles) {
       const filePath = join(cmdPath, file);
-      const { default: cmd_data, execute } = await import(`./${filePath}`);
-      commands.set(cmd_data.name, execute);
+      const { default: cmd_data, handler } = await import(`./${filePath}`);
+      commandset.set(cmd_data.name, handler);
     }
     logger.log('Successfully loaded all commands.');
   }
@@ -28,10 +28,10 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
 
 // Command handler
 bot_client.on('interactionCreate', async interaction => {
-  const command = commands.get(interaction.commandName);
-  if (!command) return;
+  const handler = commandset.get(interaction.commandName);
+  // if (!command) return;
   try {
-    await command(interaction);
+    await handler(interaction);
   }
   catch (error) {
     logger.error(error);

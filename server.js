@@ -11,7 +11,7 @@ async function server() {
     const root = 'web';
     const file = req.url;
     let full_path = join(root, file);
-    if (full_path == 'web/') full_path = 'web/index.html';
+    if (full_path == 'web/' || full_path == 'web\\') full_path = 'web/index.html';
 
     const extension = extname(full_path);
     let contentType = 'text/html';

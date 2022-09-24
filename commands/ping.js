@@ -8,8 +8,8 @@ const data = new SlashCommandBuilder()
 /**
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
-export async function execute(interaction) {
-  await interaction.reply('Pong!');
+export async function handler(interaction) {
+  await interaction.reply('Pong! :ping_pong:');
   logger.log(`/${data.name} command done`);
 }
 

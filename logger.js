@@ -31,13 +31,6 @@ export default class logger_func {
     console.log(`${this.get_time()} >> ${log_msg}`);
   }
   /**
-   * Alternative to `console.warn()`
-   * @param {*} log_msg - The message to log
-   */
-  async warn(log_msg) {
-    console.warn(`${this.get_time()} >> ${log_msg}`);
-  }
-  /**
    * Alternative to `console.error()`
    * @param {*} log_msg - The message to log
    */
