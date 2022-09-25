@@ -1,4 +1,4 @@
-import { Collection } from 'discord.js';
+import { Collection, codeBlock } from 'discord.js';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import bot_client from './bot_client.js';
@@ -27,19 +27,18 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
 })();
 
 // Command handler
-bot_client.on('interactionCreate', async interaction => {
+bot_client.on('interactionCreate', async (interaction) => {
   const handler = commandset.get(interaction.commandName);
-  // if (!command) return;
   try {
     await handler(interaction);
   }
   catch (error) {
     logger.error(error);
     if (interaction.deferred) {
-      await interaction.editReply({ content: 'Bot ran into a problem :pensive: ```json\n' + error + '```' });
+      await interaction.editReply({ content: `Bot ran into a problem :pensive: ${codeBlock(error)}` });
     }
     else {
-      await interaction.reply({ content: 'Bot ran into a problem :pensive: ```json\n' + error + '```' });
+      await interaction.reply({ content: `Bot ran into a problem :pensive: ${codeBlock(error)}` });
     }
   }
 });

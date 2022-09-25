@@ -1,4 +1,4 @@
-name: Node Tests and Deploy to Koyeb
+name: Node Tests
 
 on:
   push:
@@ -18,14 +18,3 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Install and configure the Koyeb CLI
-      uses: koyeb-community/install-koyeb-cli@v2
-      with:
-        api_token: "${{ secrets.KOYEB_TOKEN }}"
-    - name: Deploy to Koyeb
-      run: koyeb service redeploy node-apps/node-bot

@@ -29,5 +29,6 @@ export async function get_reddit() {
   }
   catch (error) {
     logger.error(error);
+    throw error;
   }
 }

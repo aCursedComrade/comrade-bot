@@ -36,7 +36,7 @@ export async function get_fullhunt(method, target) {
     return response.data;
   }
   catch (error) {
-    logger.error(error.response.data);
-    return error.response.data;
+    logger.error(error);
+    throw error;
   }
 }

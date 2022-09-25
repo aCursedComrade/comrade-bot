@@ -5,7 +5,7 @@ const logger = new logger_func();
 
 const data = new SlashCommandBuilder()
   .setName('fullhunt')
-  .setDescription('Interact with FullHunt API to discover attack surfaces')
+  .setDescription('Interact with FullHunt API to discover attack surfaces. ( May not work with all domains :/ )')
   .addStringOption(option => option
     .setName('query')
     .setDescription('Select what kind of query to make')
@@ -23,7 +23,7 @@ const data = new SlashCommandBuilder()
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
 export async function handler(interaction) {
-  await interaction.deferReply();
+  await interaction.deferReply({ ephemeral: true });
   const method = interaction.options.getString('query');
   const target = interaction.options.getString('host');
   const fh_data = JSON.stringify(await get_fullhunt(method, target), null, '  ');

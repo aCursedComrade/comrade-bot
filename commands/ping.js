@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, userMention } from 'discord.js';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
@@ -9,8 +9,12 @@ const data = new SlashCommandBuilder()
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
 export async function handler(interaction) {
-  await interaction.reply('Pong! :ping_pong:');
+  const funni = 'https://tenor.com/view/bonk-gif-19410756';
+  await interaction.reply('Pong! :ping_pong: ...');
   logger.log(`/${data.name} command done`);
+  setTimeout(() => {
+    interaction.followUp({ content: `${userMention(interaction.user.id)} [BONK!](${funni})`, ephemeral: true });
+  }, 5000);
 }
 
 export default data;
