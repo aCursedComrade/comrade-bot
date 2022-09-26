@@ -5,7 +5,7 @@ const logger = new logger_func();
 
 const data = new SlashCommandBuilder()
   .setName('fullhunt')
-  .setDescription('Interact with FullHunt API to discover attack surfaces. ( May not work with all domains :/ )')
+  .setDescription('Discover domain information with FullHunt API. ( May not work with all domains :/ )')
   .addStringOption(option => option
     .setName('query')
     .setDescription('Select what kind of query to make')

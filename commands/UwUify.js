@@ -12,12 +12,12 @@ const data = new ContextMenuCommandBuilder()
  * @param {import('discord.js').MessageContextMenuCommandInteraction} interaction
  */
 export async function handler(interaction) {
-  interaction.deferReply();
+  await interaction.deferReply();
   const uwuapi = 'https://uwuaas.herokuapp.com/api/';
   const body = { 'text': interaction.targetMessage.content };
   await axios.post(uwuapi, body)
     .then(async (res) => {
-      interaction.editReply({ content: `${res.data.text} \n> *[Original message](<${interaction.targetMessage.url}>)*` });
+      await interaction.editReply({ content: `${res.data.text} \n> *[Original message](<${interaction.targetMessage.url}>)*` });
     });
   logger.log(`/${data.name} command done`);
 }
