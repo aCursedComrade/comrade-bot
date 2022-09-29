@@ -33,7 +33,7 @@ export async function handler(interaction) {
         .setImage(guild.bannerURL({ size: 4096 }))
         .setFooter({ text: `Guild ID: ${guild.id}` })
         .setTimestamp();
-      interaction.editReply({ embeds: [embed.data] });
+      await interaction.editReply({ embeds: [embed.data] });
       logger.log(`/${data.name} command done`);
     })
     .catch(error => {

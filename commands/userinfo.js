@@ -34,7 +34,7 @@ export async function handler(interaction) {
         ])
         .setFooter({ text: `User ID: ${member.id}` })
         .setTimestamp();
-      interaction.editReply({ embeds: [embed.data] });
+      await interaction.editReply({ embeds: [embed.data] });
       logger.log(`/${data.name} command done`);
     })
     .catch(error => {
