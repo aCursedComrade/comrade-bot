@@ -26,7 +26,7 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
   }
 })();
 
-// Command handler
+// Event Handlers
 bot_client.on('interactionCreate', async (interaction) => {
   const handler = commandset.get(interaction.commandName);
   try {
@@ -43,7 +43,7 @@ bot_client.on('interactionCreate', async (interaction) => {
   }
 });
 
-bot_client.on('ready', () => {
+bot_client.once('ready', () => {
   logger.log(`Logged in as ${bot_client.user.tag}!`);
 });
 
