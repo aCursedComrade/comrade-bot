@@ -1,42 +1,34 @@
 import axios from 'axios';
 import 'dotenv/config';
-import logger_func from '../logger.js';
-const logger = new logger_func();
 
 export async function get_fullhunt(method, target) {
   const basePath = 'https://fullhunt.io/api/v1';
   let response = null;
-  try {
-    switch (method) {
-    case 'domain': {
-      response = await axios.get(`${basePath}/domain/${target}/details`, {
-        headers: {
-          'X-API-Key': `${process.env.FH_API}`,
-        },
-      });
-      break;
-    }
-    case 'subdomains': {
-      response = await axios.get(`${basePath}/domain/${target}/subdomains`, {
-        headers: {
-          'X-API-Key': `${process.env.FH_API}`,
-        },
-      });
-      break;
-    }
-    case 'host': {
-      response = await axios.get(`${basePath}/host/${target}`, {
-        headers: {
-          'X-API-Key': `${process.env.FH_API}`,
-        },
-      });
-      break;
-    }
-    }
-    return response.data;
+  switch (method) {
+  case 'domain': {
+    response = await axios.get(`${basePath}/domain/${target}/details`, {
+      headers: {
+        'X-API-Key': `${process.env.FH_API}`,
+      },
+    });
+    break;
   }
-  catch (error) {
-    logger.error(error);
-    throw error;
+  case 'subdomains': {
+    response = await axios.get(`${basePath}/domain/${target}/subdomains`, {
+      headers: {
+        'X-API-Key': `${process.env.FH_API}`,
+      },
+    });
+    break;
   }
+  case 'host': {
+    response = await axios.get(`${basePath}/host/${target}`, {
+      headers: {
+        'X-API-Key': `${process.env.FH_API}`,
+      },
+    });
+    break;
+  }
+  }
+  return response.data;
 }

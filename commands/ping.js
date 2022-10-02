@@ -9,12 +9,13 @@ const data = new SlashCommandBuilder()
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
 export async function handler(interaction) {
+  const time = 1000 * 5;
   const funni = 'https://tenor.com/view/bonk-gif-19410756';
   await interaction.reply('Pong! :ping_pong: ...');
   logger.log(`/${data.name} command done`);
-  setTimeout(async () => {
-    await interaction.followUp({ content: `${userMention(interaction.user.id)} [BONK!](${funni})`, ephemeral: true });
-  }, 5000);
+  setTimeout(() => {
+    interaction.followUp({ content: `${userMention(interaction.user.id)} [BONK!](${funni})`, ephemeral: true });
+  }, time);
 }
 
 export default data;

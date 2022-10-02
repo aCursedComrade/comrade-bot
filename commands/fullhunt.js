@@ -27,7 +27,7 @@ export async function handler(interaction) {
   const method = interaction.options.getString('query');
   const target = interaction.options.getString('host');
   const fh_data = JSON.stringify(await get_fullhunt(method, target), null, '  ');
-  const file_buf = Buffer.from(fh_data, 'latin1');
+  const file_buf = Buffer.from(fh_data, 'UTF-8');
   const file = new AttachmentBuilder(file_buf, { name: 'fullhunt.json' });
   await interaction.editReply({
     files: [file],

@@ -11,7 +11,7 @@ const data = new SlashCommandBuilder()
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
 export async function handler(interaction) {
-  await interaction.deferReply({ ephemeral: false });
+  // await interaction.deferReply({ ephemeral: false });
   await bot_client.guilds.fetch(interaction.guild.id)
     .then(async (guild) => {
       const roles = guild.roles.cache.map(role => role).toString().replace(/,/g, ' ');
@@ -33,12 +33,8 @@ export async function handler(interaction) {
         .setImage(guild.bannerURL({ size: 4096 }))
         .setFooter({ text: `Guild ID: ${guild.id}` })
         .setTimestamp();
-      await interaction.editReply({ embeds: [embed.data] });
+      interaction.reply({ embeds: [embed.data] });
       logger.log(`/${data.name} command done`);
-    })
-    .catch(error => {
-      logger.error(error);
-      throw error;
     });
 }
 
