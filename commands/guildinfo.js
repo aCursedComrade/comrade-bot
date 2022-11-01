@@ -1,5 +1,4 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import bot_client from '../bot_client.js';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
@@ -12,10 +11,10 @@ const data = new SlashCommandBuilder()
  */
 export async function handler(interaction) {
   // await interaction.deferReply({ ephemeral: false });
-  await bot_client.guilds.fetch(interaction.guild.id)
+  await interaction.guild.fetch(interaction.guild.id)
     .then(async (guild) => {
-      const roles = guild.roles.cache.map(role => role).toString().replace(/,/g, ' ');
-      const emojis = guild.emojis.cache.map(emoji => emoji).toString().replace(/,/g, ' ') || '(No emojis)';
+      const roles = guild.roles.cache.map(role => role).toString().replace(/,/g, ' ') || '(No roles available)';
+      const emojis = guild.emojis.cache.map(emoji => emoji).toString().replace(/,/g, ' ') || '(No emojis available)';
       const embed = new EmbedBuilder()
         .setTitle(`${guild.name}`)
         .setColor(await guild.fetchOwner({ cache: true }).then(owner => owner.displayColor))
@@ -33,7 +32,7 @@ export async function handler(interaction) {
         .setImage(guild.bannerURL({ size: 4096 }))
         .setFooter({ text: `Guild ID: ${guild.id}` })
         .setTimestamp();
-      interaction.reply({ embeds: [embed.data] });
+      interaction.reply({ embeds: [embed.data], ephemeral: true });
       logger.log(`/${data.name} command done`);
     });
 }

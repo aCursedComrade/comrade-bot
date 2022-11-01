@@ -1,5 +1,4 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import bot_client from '../bot_client.js';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
@@ -16,10 +15,9 @@ const data = new SlashCommandBuilder()
  */
 export async function handler(interaction) {
   // await interaction.deferReply({ ephemeral: true });
-  const guildinfo = await bot_client.guilds.fetch(interaction.guild.id);
-  await guildinfo.members.fetch(interaction?.options.getUser('user', false) || interaction.user.id)
+  await interaction.guild.members.fetch(interaction?.options.getUser('user', false) || interaction.user.id)
     .then(async (member) => {
-      const roles = member.roles.cache.map(role => role).toString().replace(/,/g, ' ');
+      const roles = member.roles.cache.map(role => role).toString().replace(/,/g, ' ') || '(User has no roles)';
       const embed = new EmbedBuilder()
         .setAuthor({ name: `${member.user.username}#${member.user.discriminator}` })
         .setColor(member.displayColor)

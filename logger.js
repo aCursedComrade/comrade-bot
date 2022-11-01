@@ -1,27 +1,12 @@
 // Just a quick way to log with timestamp in my local timezone no matter where its deployed
 // https://jsdoc.app/index.html
 
-/** Logging with timestamp */
-export default class logger_func {
-  /**
-   * A class for logging in terminal with timestamp. Edit '/logger.js' file as necessary.
-   */
-  constructor() {
-    null;
-  }
-  get_time() {
-    const options = {
-        timeZone: 'Asia/Colombo',
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-      },
-      formatter = new Intl.DateTimeFormat(['en-uk'], options);
+import { DateTime } from 'luxon';
 
-    return formatter.format(new Date());
+/** Logging with timestamp */
+class logclass {
+  get_time() {
+    return DateTime.now().setZone('Asia/Colombo').toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
   }
   /**
    * Alternative to `console.log()`
@@ -38,3 +23,5 @@ export default class logger_func {
     console.error(`${this.get_time()} >> ${log_msg}`);
   }
 }
+
+export default logclass;
