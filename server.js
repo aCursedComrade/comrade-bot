@@ -11,5 +11,4 @@ async function server() {
   logger.log('Server started.');
 }
 
-// server();
 export default server;

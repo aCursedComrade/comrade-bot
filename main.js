@@ -3,10 +3,13 @@ import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import bot_client from './bot_client.js';
 import server from './server.js';
-import logger_func from './logger.js';
+import logclass from './logger.js';
+import init_modules from './submodules/init.js';
 import 'dotenv/config';
-const logger = new logger_func();
+
+const logger = new logclass();
 server();
+init_modules();
 
 // Dynamically loading commands
 const commandset = new Collection();
@@ -16,8 +19,8 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
   try {
     for (const file of cmdFiles) {
       const filePath = join(cmdPath, file);
-      const { default: cmd_data, handler } = await import(`./${filePath}`);
-      commandset.set(cmd_data.name, handler);
+      const { data, handler } = await import(`./${filePath}`);
+      commandset.set(data.name, handler);
     }
     logger.log('Successfully loaded all commands.');
   }

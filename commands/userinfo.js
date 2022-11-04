@@ -2,7 +2,7 @@ import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
   .setName('userinfo')
   .setDMPermission(false)
   .setDescription('Retrieves information about the user.')
@@ -36,5 +36,3 @@ export async function handler(interaction) {
       logger.log(`/${data.name} command done`);
     });
 }
-
-export default data;

@@ -4,7 +4,7 @@ const logger = new logclass();
 
 // No persistence yet, resets every restart
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
   .setName('rss-feed')
   .setDMPermission(false)
   .setDescription('Listens and post messages from rss events.')
@@ -29,12 +29,10 @@ export async function handler(interaction) {
     const feed_url = interaction.options.getString('url');
     await interaction.reply(`Feed events from \`${feed_url}\` will be posted in ${channel} from now on.`);
     feed_list.push({ 'guild': `${interaction.guild.id}`, 'channel': `${channel.id}`, 'url': `${feed_url}` });
-    console.log(feed_list);
+    // console.log(feed_list);
   }
   else {
     await interaction.reply({ content: 'Sorry, only Administrators can do this!. Contact an Administrator in the guild to add yours.', ephemeral: true });
   }
   logger.log(`/${data.name} command done`);
 }
-
-export default data;

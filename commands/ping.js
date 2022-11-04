@@ -2,7 +2,7 @@ import { SlashCommandBuilder, userMention } from 'discord.js';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
   .setName('ping')
   .setDescription('Replies with Pong!');
 /**
@@ -17,5 +17,3 @@ export async function handler(interaction) {
     interaction.followUp({ content: `${userMention(interaction.user.id)} [BONK!](${funni})`, ephemeral: true });
   }, time);
 }
-
-export default data;

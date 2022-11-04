@@ -5,7 +5,7 @@ const logger = new logger_func();
 
 // why did i make this
 
-const data = new ContextMenuCommandBuilder()
+export const data = new ContextMenuCommandBuilder()
   .setName('UwUify')
   .setType(ApplicationCommandType.Message);
 /**
@@ -21,5 +21,3 @@ export async function handler(interaction) {
     });
   logger.log(`/${data.name} command done`);
 }
-
-export default data;

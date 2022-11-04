@@ -3,7 +3,7 @@ import { get_fullhunt } from '../functions/get_fullhunt.js';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
   .setName('fullhunt')
   .setDescription('Discover domain information with FullHunt API. ( May not work with all domains :/ )')
   .addStringOption(option => option
@@ -34,5 +34,3 @@ export async function handler(interaction) {
   });
   logger.log(`/${data.name} command done`);
 }
-
-export default data;

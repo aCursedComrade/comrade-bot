@@ -3,7 +3,7 @@ import axios from 'axios';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
-const data = new SlashCommandBuilder()
+export const data = new SlashCommandBuilder()
   .setName('lengthen')
   .setDescription('Lengthens a shortened URL')
   .addStringOption(option => option
@@ -19,5 +19,3 @@ export async function handler(interaction) {
   await interaction.reply(response.request.res.responseUrl);
   logger.log(`/${data.name} command done`);
 }
-
-export default data;

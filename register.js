@@ -15,8 +15,8 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
   try {
     for (const file of cmdFiles) {
       const filePath = join(cmdPath, file);
-      const { default: cmd_data } = await import(`./${filePath}`);
-      commands.push(cmd_data);
+      const { data } = await import(`./${filePath}`);
+      commands.push(data);
     }
 
     // logger.log(commands);

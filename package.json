@@ -4,6 +4,7 @@
   "description": "",
   "main": "./main.js",
   "type": "module",
+  "private":"true",
   "scripts": {
     "start": "node ./main.js",
     "register": "node ./register.js",
