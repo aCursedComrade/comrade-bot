@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, userMention } from 'discord.js';
+import { SlashCommandBuilder } from 'discord.js';
 import logger_func from '../logger.js';
 const logger = new logger_func();
 
@@ -14,6 +14,6 @@ export async function handler(interaction) {
   await interaction.reply('Pong! :ping_pong: ...');
   logger.log(`/${data.name} command done`);
   setTimeout(() => {
-    interaction.followUp({ content: `${userMention(interaction.user.id)} [BONK!](${funni})`, ephemeral: true });
+    interaction.followUp({ content: `<@${interaction.user.id}> [BONK!](${funni})`, ephemeral: true });
   }, time);
 }

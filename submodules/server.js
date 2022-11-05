@@ -1,5 +1,5 @@
 import http from 'http';
-import logger_func from './logger.js';
+import logger_func from '../logger.js';
 const logger = new logger_func();
 
 // Simple server to play around with, not associated with the bot yet

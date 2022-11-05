@@ -1,14 +1,12 @@
 import { Collection, codeBlock } from 'discord.js';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import bot_client from './bot_client.js';
-import server from './server.js';
+import bot_client from './client.js';
 import logclass from './logger.js';
 import init_modules from './submodules/init.js';
 import 'dotenv/config';
 
 const logger = new logclass();
-server();
 init_modules();
 
 // Dynamically loading commands
@@ -36,12 +34,13 @@ bot_client.on('interactionCreate', async (interaction) => {
     await handler(interaction);
   }
   catch (error) {
-    logger.error(error);
+    logger.error(error.message);
+    // console.error(error);
     if (interaction.deferred) {
-      await interaction.editReply({ content: `Bot ran into a problem :pensive: ${codeBlock(error)}` });
+      await interaction.editReply({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
     }
     else {
-      await interaction.reply({ content: `Bot ran into a problem :pensive: ${codeBlock(error)}` });
+      await interaction.reply({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
     }
   }
 });
