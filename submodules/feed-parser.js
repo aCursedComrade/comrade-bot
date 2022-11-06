@@ -6,7 +6,7 @@ import logclass from '../logger.js';
 import RSSObj from '../models/RSSObj.js';
 
 const logger = new logclass();
-const INTERVAL = 1000 * 20;
+const INTERVAL = 1000 * 60 * 10;
 
 export async function feedReader() {
   setInterval(() => {
