@@ -46,14 +46,14 @@ export async function handler(interaction) {
           guild_id: interaction.guild.id,
           channel_id: channel,
           rss_source: feed_url,
-          last_update: DateTime.now().toUTC().toISO(),
+          last_update: DateTime.now().toISO(),
         });
         rss_record.save();
         await interaction.editReply(`Feed events from \`${feed_url}\` will be posted in <#${channel}> from now on.`);
       }
       catch (error) {
         console.error(error);
-        interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
+        await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
       }
     }
     else {
@@ -81,7 +81,7 @@ export async function handler(interaction) {
   }
   else {
     // list rss handler
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
     RSSObj.find({ guild_id: interaction.guild.id }).exec((error, callback) => {
       if (error) {
         console.error(error);
@@ -89,14 +89,19 @@ export async function handler(interaction) {
       }
       else {
         const recordFields = [];
-        callback.forEach(item => {
-          // create a field for each item
-          recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} in <#${item.channel_id}>` });
-        });
+        if (callback.length > 0) {
+          callback.forEach(item => {
+            // create a field for each item
+            recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} in <#${item.channel_id}>` });
+          });
+        }
+        else {
+          recordFields.push({ name: 'No RSS feeds', value: 'Use the "/rss-feed create" command to add RSS feeds to your guild.' });
+        }
         const embed = new EmbedBuilder()
           .setTitle('RSS Feeds')
           .setDescription('Configured RSS feeds for this guild.')
-          .setFooter({ text: `${interaction.guild.name}`, iconURL: interaction.guild.icon })
+          .setFooter({ text: `${interaction.guild.name}`, iconURL: interaction.guild.iconURL() })
           .setFields(recordFields);
         interaction.editReply({ embeds: [embed.data] });
       }

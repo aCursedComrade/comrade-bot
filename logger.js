@@ -12,14 +12,14 @@ class logclass {
    * Alternative to `console.log()`
    * @param {*} log_msg - The message to log
    */
-  async log(log_msg) {
+  log(log_msg) {
     console.log(`${this.get_time()} >> ${log_msg}`);
   }
   /**
    * Alternative to `console.error()`
    * @param {*} log_msg - The message to log
    */
-  async error(log_msg) {
+  error(log_msg) {
     console.error(`${this.get_time()} >> ${log_msg}`);
   }
 }
