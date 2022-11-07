@@ -65,13 +65,13 @@ export async function handler(interaction) {
     if (user.permissions.has('Administrator')) {
       await interaction.deferReply({ ephemeral: true });
       const rssId = interaction.options.getString('rss-id');
-      RSSObj.findByIdAndDelete(rssId).exec((error, callback) => {
+      RSSObj.findByIdAndDelete(rssId).exec(async (error, callback) => {
         if (error) {
           console.error(error);
-          interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
+          await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
         }
         else {
-          interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
+          await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
         }
       });
     }
@@ -79,13 +79,13 @@ export async function handler(interaction) {
       await interaction.reply({ content: 'Sorry, only Administrators can do this!.', ephemeral: true });
     }
   }
-  else {
+  else if (interaction.options.getSubcommand() === 'list') {
     // list rss handler
     await interaction.deferReply();
-    RSSObj.find({ guild_id: interaction.guild.id }).exec((error, callback) => {
+    RSSObj.find({ guild_id: interaction.guild.id }).exec(async (error, callback) => {
       if (error) {
         console.error(error);
-        interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
+        await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
       }
       else {
         const recordFields = [];
@@ -103,7 +103,7 @@ export async function handler(interaction) {
           .setDescription('Configured RSS feeds for this guild.')
           .setFooter({ text: `${interaction.guild.name}`, iconURL: interaction.guild.iconURL() })
           .setFields(recordFields);
-        interaction.editReply({ embeds: [embed.data] });
+        await interaction.editReply({ embeds: [embed.data] });
       }
     });
   }

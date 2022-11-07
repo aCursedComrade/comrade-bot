@@ -32,7 +32,7 @@ export async function feedReader() {
                       .setURL(entry.link)
                       .setDescription(entry.description)
                       .setTimestamp(new Date(entry.published));
-                    channel.send({ embeds: [event_embed.data] });
+                    await channel.send({ embeds: [event_embed.data] });
                   }
                 }
                 if (latest > last_update) {
