@@ -23,7 +23,7 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
     logger.log('Successfully loaded all commands.');
   }
   catch (error) {
-    logger.error(error);
+    logger.error(error.message);
   }
 })();
 

@@ -26,6 +26,6 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
     // logger.log('Successfully reloaded TESTING application (/) commands.');
   }
   catch (error) {
-    logger.error(error);
+    logger.error(error.message);
   }
 })();

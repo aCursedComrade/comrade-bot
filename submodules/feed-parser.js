@@ -11,12 +11,26 @@ export async function feedReader() {
   setInterval(() => {
     try {
       RSSObj.find().exec(async (error, feed_list) => {
-        if (error) logger.error('Feed Parser: ' + error.message);
+        if (error) { logger.error('Feed Parser: ' + error.message); }
         for (const item of feed_list) {
-          await read(item.rss_source, { descriptionMaxLen: 400 })
+          await read(item.rss_source, { descriptionMaxLen: 300 })
             .then(async (result) => {
+              const guild = bot_client.guilds.cache.get(item.guild_id);
               const channel = bot_client.channels.cache.get(item.channel_id);
-              if (channel != undefined && result.entries != undefined) {
+              if (guild != undefined && channel != undefined && result.entries != undefined) {
+
+                // create or fetch the appropiate webhook to post
+                const rss_hook_name = 'RSS by Comrade Bot';
+                const rss_hook_avatar = bot_client.user.displayAvatarURL({ size: 4096 });
+                let rss_hook = '';
+                const webhooks = await channel.fetchWebhooks();
+                const one_hook = webhooks.find(hook => hook.name === rss_hook_name);
+                if (one_hook) {
+                  rss_hook = one_hook;
+                }
+                else {
+                  rss_hook = await channel.createWebhook({ name: rss_hook_name });
+                }
 
                 // find the index of the last update
                 const last_update = result.entries.findIndex((entry) => entry.title == item.last_update);
@@ -39,30 +53,32 @@ export async function feedReader() {
                     .setURL(entry.link)
                     .setDescription(entry.description)
                     .setTimestamp(new Date(entry.published));
-                  await channel.send({ embeds: [event_embed.data] });
+                  await rss_hook.send({
+                    avatarURL: rss_hook_avatar,
+                    embeds: [event_embed.data],
+                  });
                 }
 
                 // take first latest entry and update the databse regardless of the above
                 RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title.toString() }).exec((err) => {
                   if (err) {
-                    console.error(err);
+                    console.error(err.message);
                   }
                 });
               }
               else {
-                logger.error(`${item.channel_id} || ${item.rss_source} unresolvable, passing.`);
+                logger.error(`${item.guild_id} || ${item.channel_id} || ${item.rss_source} unresolvable, passing.`);
               }
             })
             .catch((feed_error) => {
-              logger.error('Feed Parser: Error when reading source.');
-              console.error(feed_error);
+              logger.error('Feed Parser: ' + feed_error.message);
             });
         }
       });
     }
     catch (error) {
       logger.error('Feed Parser: ' + error.message);
-      console.error(error);
+      console.error(error.message);
     }
     // logger.log('Feed Parser: Job done.');
   }, INTERVAL);

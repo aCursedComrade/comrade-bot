@@ -2,6 +2,7 @@ import { SlashCommandBuilder, EmbedBuilder, inlineCode } from 'discord.js';
 import RSSObj from '../models/RSSObj.js';
 import logclass from '../logger.js';
 import { get_latest4 } from '../submodules/feed-parser.js';
+import bot_client from '../client.js';
 const logger = new logclass();
 
 export const data = new SlashCommandBuilder()
@@ -37,7 +38,7 @@ export async function handler(interaction) {
   const user = await interaction.guild.members.fetch(interaction.user.id);
   if (interaction.options.getSubcommand() === 'create') {
     // create rss handler
-    if (user.permissions.has('Administrator')) {
+    if (user.permissions.has('ManageWebhooks')) {
       await interaction.deferReply();
       const channel = interaction.options.getChannel('channel').id;
       const feed_url = interaction.options.getString('url').toString();
@@ -58,31 +59,38 @@ export async function handler(interaction) {
         }
       }
       catch (error) {
-        console.error(error);
+        console.error(error.message);
         await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
       }
     }
     else {
-      await interaction.reply({ content: 'Sorry, only Administrators can do this!.', ephemeral: true });
+      await interaction.reply({ content: 'Sorry, only users with `Manage Webhooks` permission can do this!.', ephemeral: true });
     }
   }
   else if (interaction.options.getSubcommand() === 'delete') {
     // delete rss handler
-    if (user.permissions.has('Administrator')) {
+    if (user.permissions.has('ManageWebhooks')) {
       await interaction.deferReply();
       const rssId = interaction.options.getString('rss-id');
       RSSObj.findByIdAndDelete(rssId).exec(async (error, callback) => {
         if (error) {
-          console.error(error);
+          console.error(error.message);
           await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
         }
         else {
           await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
+          const channel = bot_client.channels.cache.get(callback.channel_id);
+          // cleanup doesnt look for other RSS feeds in the same channel, but it is handled by the feed parser
+          if (channel != undefined) {
+            const webhooks = await channel.fetchWebhooks();
+            const rss = webhooks.find(hook => hook.name === 'RSS by Comrade Bot');
+            rss.delete();
+          }
         }
       });
     }
     else {
-      await interaction.reply({ content: 'Sorry, only Administrators can do this!.', ephemeral: true });
+      await interaction.reply({ content: 'Sorry, only users with `Manage Webhooks` permission can do this!.', ephemeral: true });
     }
   }
   else if (interaction.options.getSubcommand() === 'list') {
@@ -90,7 +98,7 @@ export async function handler(interaction) {
     await interaction.deferReply();
     RSSObj.find({ guild_id: interaction.guild.id }).exec(async (error, callback) => {
       if (error) {
-        console.error(error);
+        console.error(error.message);
         await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
       }
       else {
