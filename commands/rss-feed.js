@@ -79,12 +79,15 @@ export async function handler(interaction) {
         }
         else {
           await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
+          // webhook cleanup
           const exists = await RSSObj.find({ channel_id: callback.channel_id }).exec();
           if (exists.length < 1) {
             const channel = bot_client.channels.cache.get(callback.channel_id);
             const webhooks = await channel.fetchWebhooks();
             const rss = webhooks.find(hook => hook.name === `${bot_client.user.tag} - RSS`);
-            rss.delete();
+            if (rss != undefined) {
+              rss.delete();
+            }
           }
         }
       });
