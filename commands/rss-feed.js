@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, inlineCode } from 'discord.js';
-import { DateTime } from 'luxon';
 import RSSObj from '../models/RSSObj.js';
 import logclass from '../logger.js';
+import { get_latest4 } from '../submodules/feed-parser.js';
 const logger = new logclass();
 
 export const data = new SlashCommandBuilder()
@@ -38,18 +38,24 @@ export async function handler(interaction) {
   if (interaction.options.getSubcommand() === 'create') {
     // create rss handler
     if (user.permissions.has('Administrator')) {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply();
       const channel = interaction.options.getChannel('channel').id;
-      const feed_url = interaction.options.getString('url');
+      const feed_url = interaction.options.getString('url').toString();
       try {
-        const rss_record = new RSSObj({
-          guild_id: interaction.guild.id,
-          channel_id: channel,
-          rss_source: feed_url,
-          last_update: DateTime.now().toISO(),
-        });
-        rss_record.save();
-        await interaction.editReply(`Feed events from \`${feed_url}\` will be posted in <#${channel}> from now on.`);
+        const last_entry = await get_latest4(feed_url);
+        if (last_entry != undefined) {
+          const rss_record = new RSSObj({
+            guild_id: interaction.guild.id,
+            channel_id: channel,
+            rss_source: feed_url,
+            last_update: last_entry,
+          });
+          rss_record.save();
+          await interaction.editReply(`Feed events from \`${feed_url}\` will be posted in <#${channel}> from now on.`);
+        }
+        else {
+          await interaction.editReply(`Unable to resolve \`${feed_url}\` as a RSS feed. Most likely it is an invalid RSS feed or a server-side error.`);
+        }
       }
       catch (error) {
         console.error(error);
@@ -63,7 +69,7 @@ export async function handler(interaction) {
   else if (interaction.options.getSubcommand() === 'delete') {
     // delete rss handler
     if (user.permissions.has('Administrator')) {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply();
       const rssId = interaction.options.getString('rss-id');
       RSSObj.findByIdAndDelete(rssId).exec(async (error, callback) => {
         if (error) {
