@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, inlineCode } from 'discord.js';
 import RSSObj from '../models/RSSObj.js';
 import logclass from '../logger.js';
-import { get_latest4 } from '../submodules/feed-parser.js';
+import { get_latest } from '../submodules/feed-parser.js';
 import bot_client from '../client.js';
 const logger = new logclass();
 
@@ -43,7 +43,7 @@ export async function handler(interaction) {
       const channel = interaction.options.getChannel('channel').id;
       const feed_url = interaction.options.getString('url').toString();
       try {
-        const last_entry = await get_latest4(feed_url);
+        const last_entry = await get_latest(feed_url);
         if (last_entry != undefined) {
           const rss_record = new RSSObj({
             guild_id: interaction.guild.id,
@@ -79,11 +79,11 @@ export async function handler(interaction) {
         }
         else {
           await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
-          const channel = bot_client.channels.cache.get(callback.channel_id);
-          // cleanup doesnt look for other RSS feeds in the same channel, but it is handled by the feed parser
-          if (channel != undefined) {
+          const exists = await RSSObj.find({ channel_id: callback.channel_id }).exec();
+          if (exists.length < 1) {
+            const channel = bot_client.channels.cache.get(callback.channel_id);
             const webhooks = await channel.fetchWebhooks();
-            const rss = webhooks.find(hook => hook.name === 'RSS by Comrade Bot');
+            const rss = webhooks.find(hook => hook.name === `${bot_client.user.tag} - RSS`);
             rss.delete();
           }
         }
