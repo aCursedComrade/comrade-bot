@@ -24,8 +24,8 @@ export async function handler(interaction) {
         .setThumbnail(member.displayAvatarURL({ size: 4096 }))
         .setDescription(`${member.user}`)
         .setFields([
-          { name: 'Registered on:', value: `<t:${Math.floor(member.user.createdAt / 1000)}:D>`, inline: true },
-          { name: 'Joined on:', value: `<t:${Math.floor(member.joinedAt / 1000)}:D>`, inline: true },
+          { name: 'Registered on:', value: `<t:${Math.floor(member.user.createdAt.valueOf() / 1000)}:D>`, inline: true },
+          { name: 'Joined on:', value: `<t:${Math.floor(member.joinedAt.valueOf() / 1000)}:D>`, inline: true },
           { name: `Roles: (${member.roles.cache.size})`, value: `${roles.length < 1024 ? roles : '(List exceeds field capacity)'}` },
           { name: 'Highest Role:', value: `${member.roles.highest}` },
           { name: 'Is a bot?', value: `${member.user.bot}` },

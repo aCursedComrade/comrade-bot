@@ -11,7 +11,7 @@ export const data = new SlashCommandBuilder()
  */
 export async function handler(interaction) {
   // await interaction.deferReply({ ephemeral: false });
-  await interaction.guild.fetch(interaction.guild.id)
+  await interaction.guild.fetch()
     .then(async (guild) => {
       const roles = guild.roles.cache.map(role => role).toString().replace(/,/g, ' ') || '(No roles available)';
       const emojis = guild.emojis.cache.map(emoji => emoji).toString().replace(/,/g, ' ') || '(No emojis available)';
@@ -21,7 +21,7 @@ export async function handler(interaction) {
         .setThumbnail(guild.iconURL({ size: 4096 }))
         .addFields([
           { name: 'Server owner:', value: `<@${guild.ownerId}>`, inline: true },
-          { name: 'Server created on:', value: `<t:${Math.floor(guild.createdAt / 1000)}:D>`, inline: true },
+          { name: 'Server created on:', value: `<t:${Math.floor(guild.createdAt.valueOf() / 1000)}:D>`, inline: true },
           { name: 'Member count:', value: `${guild.memberCount}`, inline: true },
           { name: 'Channel categories:', value: `${guild.channels.cache.filter(ch => !ch.isTextBased() && !ch.isVoiceBased()).size}`, inline: true },
           { name: 'Text channels:', value: `${guild.channels.cache.filter(ch => ch.isTextBased() && !ch.isVoiceBased() && !ch.isThread()).size}`, inline: true },

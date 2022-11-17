@@ -1,5 +1,5 @@
 import { read } from 'feed-reader';
-import { EmbedBuilder, WebhookClient } from 'discord.js';
+import { EmbedBuilder, TextChannel, WebhookClient } from 'discord.js';
 import bot_client from '../client.js';
 import logclass from '../logger.js';
 import RSSObj from '../models/RSSObj.js';
@@ -10,16 +10,22 @@ const INTERVAL = 1000 * 60 * 10;
 // Validate and return the latest entry at initial setup
 /**
  * @param {String} url
+ * @returns {Promise<string | undefined>}
  */
 export async function get_latest(url) {
-  const feeddata = await read(url, { descriptionMaxLen: 100 }).catch(() => { return undefined; });
-  return feeddata == undefined ? undefined : feeddata.entries[0].title;
+  try {
+    const feeddata = await read(url, { descriptionMaxLen: 100 });
+    return feeddata.entries[0].title;
+  }
+  catch {
+    return undefined;
+  }
 }
 
 // Find or return a webhook of specified name
 /**
  * @param {string} hook_name
- * @param {import('discord.js').Channel} channel
+ * @param {import('discord.js').TextChannel} channel
  * @returns {Promise<import('discord.js').WebhookClient | import('discord.js').Webhook>} A WebHook object
  */
 async function get_hook(hook_name, channel) {
@@ -39,10 +45,10 @@ export async function feedReader() {
       if (error) { logger.error('Feed Parser: ' + error.message); }
       try {
         for (const item of feed_list) {
-          const result = await read(item.rss_source, { descriptionMaxLen: 300 }).catch(() => { return undefined; });
+          const result = await read(item.rss_source, { descriptionMaxLen: 300 });
           const guild = bot_client.guilds.cache.get(item.guild_id);
-          const channel = bot_client.channels.cache.get(item.channel_id);
-          if (guild != undefined && channel != undefined && result != undefined) {
+          const channel = await bot_client.channels.cache.get(item.channel_id).fetch();
+          if (guild != undefined && channel == TextChannel.prototype && result != undefined) {
 
             // create or fetch the appropiate webhook to post
             const webhook = await get_hook(`${bot_client.user.tag} - RSS`, channel);
@@ -67,8 +73,7 @@ export async function feedReader() {
                 .setAuthor({ name: result.title, url: result.link })
                 .setTitle(entry.title)
                 .setURL(entry.link)
-                .setDescription(entry.description)
-                .setTimestamp(new Date(entry.published));
+                .setDescription(entry.description);
               await webhook.send({
                 avatarURL: bot_client.user.displayAvatarURL({ size: 4096 }),
                 embeds: [event_embed.data],

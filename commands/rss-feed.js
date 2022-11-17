@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder, inlineCode } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, inlineCode, TextChannel } from 'discord.js';
 import RSSObj from '../models/RSSObj.js';
 import logclass from '../logger.js';
 import { get_latest } from '../submodules/feed-parser.js';
@@ -81,8 +81,8 @@ export async function handler(interaction) {
           await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
           // webhook cleanup
           const exists = await RSSObj.find({ channel_id: callback.channel_id }).exec();
-          if (exists.length < 1) {
-            const channel = bot_client.channels.cache.get(callback.channel_id);
+          const channel = await bot_client.channels.cache.get(callback.channel_id).fetch();
+          if (exists.length < 1 && channel == TextChannel.prototype) {
             const webhooks = await channel.fetchWebhooks();
             const rss = webhooks.find(hook => hook.name === `${bot_client.user.tag} - RSS`);
             if (rss != undefined) {
