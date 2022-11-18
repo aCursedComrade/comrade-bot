@@ -80,13 +80,13 @@ export async function feedReader() {
               await webhook.send({
                 avatarURL: bot_client.user.displayAvatarURL({ size: 4096 }),
                 embeds: [event_embed.data],
-              });
+              }).catch((post_error) => { logger.error('Feed Parser: ' + post_error.message); });
             }
 
             // take first latest entry and update the databse regardless of the above
-            RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title.toString() }).exec((err) => {
-              if (err) {
-                console.error(err.message);
+            RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title.toString() }).exec((update_error) => {
+              if (update_error) {
+                console.error(update_error.message);
               }
             });
           }
