@@ -1,5 +1,5 @@
 import { read } from 'feed-reader';
-import { EmbedBuilder, TextChannel, WebhookClient } from 'discord.js';
+import { ChannelType, EmbedBuilder, WebhookClient } from 'discord.js';
 import bot_client from '../client.js';
 import logclass from '../logger.js';
 import RSSObj from '../models/RSSObj.js';
@@ -25,17 +25,20 @@ export async function get_latest(url) {
 // Find or return a webhook of specified name
 /**
  * @param {string} hook_name
- * @param {import('discord.js').TextChannel} channel
+ * @param {import('discord.js').Channel} channel
  * @returns {Promise<import('discord.js').WebhookClient | import('discord.js').Webhook>} A WebHook object
  */
 async function get_hook(hook_name, channel) {
-  const webhooks = await channel.fetchWebhooks();
-  const find_hook = webhooks.find(hook => hook.name === hook_name);
-  if (find_hook) {
-    return new WebhookClient({ url: find_hook.url });
-  }
-  else {
-    return await channel.createWebhook({ name: hook_name });
+  const getchnl = await channel.fetch();
+  if (getchnl.type == ChannelType.GuildText) {
+    const webhooks = await getchnl.fetchWebhooks();
+    const find_hook = webhooks.find(hook => hook.name === hook_name);
+    if (find_hook) {
+      return new WebhookClient({ url: find_hook.url });
+    }
+    else {
+      return await getchnl.createWebhook({ name: hook_name });
+    }
   }
 }
 
@@ -43,12 +46,12 @@ export async function feedReader() {
   setInterval(() => {
     RSSObj.find().exec(async (error, feed_list) => {
       if (error) { logger.error('Feed Parser: ' + error.message); }
-      try {
-        for (const item of feed_list) {
+      for (const item of feed_list) {
+        try {
           const result = await read(item.rss_source, { descriptionMaxLen: 300 });
           const guild = bot_client.guilds.cache.get(item.guild_id);
-          const channel = await bot_client.channels.cache.get(item.channel_id).fetch();
-          if (guild != undefined && channel == TextChannel.prototype && result != undefined) {
+          const channel = bot_client.channels.cache.get(item.channel_id);
+          if (guild && channel && result) {
 
             // create or fetch the appropiate webhook to post
             const webhook = await get_hook(`${bot_client.user.tag} - RSS`, channel);
@@ -59,11 +62,11 @@ export async function feedReader() {
             let new_entries = [];
 
             if (last_update >= 0) {
-              // slice the array of entries upto the last update
+            // slice the array of entries upto the last update
               new_entries = result.entries.slice(0, last_update);
             }
             else {
-              // else take the top 5 if somehow we cannot find the last update (theres a lot of updates)
+            // else take the top 5 if somehow we cannot find the last update (theres a lot of updates)
               new_entries = result.entries.slice(0, 5);
             }
 
@@ -88,11 +91,10 @@ export async function feedReader() {
             });
           }
         }
-      }
-      catch (parse_error) {
-        logger.error('Feed parser: ' + parse_error.message);
+        catch (parser_error) {
+          logger.error('Feed parser: ' + parser_error.message);
+        }
       }
     });
-    // logger.log('Feed Parser: Job done.');
   }, INTERVAL);
 }
