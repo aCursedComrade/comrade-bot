@@ -33,7 +33,7 @@ async function get_hook(hook_name, channel) {
   if (getchnl.type == ChannelType.GuildText) {
     const webhooks = await getchnl.fetchWebhooks();
     const find_hook = webhooks.find(hook => hook.name === hook_name);
-    if (find_hook) {
+    if (find_hook?.token) {
       return new WebhookClient({ url: find_hook.url });
     }
     else {
@@ -45,14 +45,18 @@ async function get_hook(hook_name, channel) {
 export async function feedReader() {
   setInterval(() => {
     RSSObj.find().exec(async (error, feed_list) => {
-      if (error) { logger.error('Feed Parser: ' + error.message); }
-      for (const item of feed_list) {
-        try {
-          const result = await read(item.rss_source, { descriptionMaxLen: 300 });
-          const guild = bot_client.guilds.cache.get(item.guild_id);
-          const channel = bot_client.channels.cache.get(item.channel_id);
-          if (guild && channel && result) {
+      if (error) {
+        logger.error('Feed Parser (db_read): ' + error.message);
+      }
+      else {
+        for (const item of feed_list) {
+          const result = await read(item.rss_source, { descriptionMaxLen: 300, useISODateFormat: true }).catch(function(read_error) {
+            logger.error('Feed Parser (read): ' + read_error.message);
+          });
 
+          // const guild = bot_client.guilds.cache.get(item.guild_id);
+          const channel = bot_client.channels.cache.get(item.channel_id);
+          if (channel && result) {
             // create or fetch the appropiate webhook to post
             const webhook = await get_hook(`${bot_client.user.tag} - RSS`, channel);
             // console.log(webhook);
@@ -60,39 +64,45 @@ export async function feedReader() {
             // find the index of the last update
             const last_update = result.entries.findIndex((entry) => entry.title == item.last_update);
             let new_entries = [];
-
             if (last_update >= 0) {
-            // slice the array of entries upto the last update
+              // slice the array of entries upto the last update
               new_entries = result.entries.slice(0, last_update);
             }
             else {
-            // else take the top 5 if somehow we cannot find the last update (theres a lot of updates)
+              // else take the top 5 if somehow we cannot find the last update (theres a lot of updates)
               new_entries = result.entries.slice(0, 5);
             }
 
             // reverse the entries the so older ones are posted first
             for (const entry of new_entries.reverse()) {
               const event_embed = new EmbedBuilder()
-                .setAuthor({ name: result.title, url: result.link })
+                .setAuthor({ name: result.title, url: result.link || null })
                 .setTitle(entry.title)
                 .setURL(entry.link)
                 .setDescription(entry.description);
-              await webhook.send({
-                avatarURL: bot_client.user.displayAvatarURL({ size: 4096 }),
-                embeds: [event_embed.data],
-              }).catch((post_error) => { logger.error('Feed Parser: ' + post_error.message); });
+              // console.log([event_embed.data]);
+              try {
+                await webhook.send({
+                  avatarURL: bot_client.user.displayAvatarURL({ size: 4096 }),
+                  embeds: [event_embed.data],
+                });
+              }
+              catch (post_error) {
+                logger.error('Feed Parser (post):' + post_error.message);
+                // console.error(post_error);
+              }
             }
 
-            // take first latest entry and update the databse regardless of the above
-            RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title.toString() }).exec((update_error) => {
-              if (update_error) {
-                console.error(update_error.message);
-              }
-            });
+            // take latest entry and update the databse regardless of the above
+            // previous posts may be emitted again if the feed author updated the post
+            if (result) {
+              RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title }).exec((update_error) => {
+                if (update_error) {
+                  logger.error('Feed Parser (update):' + update_error.message);
+                }
+              });
+            }
           }
-        }
-        catch (parser_error) {
-          logger.error('Feed parser: ' + parser_error.message);
         }
       }
     });

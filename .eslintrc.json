@@ -19,8 +19,8 @@
 		"handle-callback-err": "off",
 		"indent": ["error", 2],
 		"keyword-spacing": "error",
-		"max-nested-callbacks": ["error", { "max": 4 }],
-		"max-statements-per-line": ["error", { "max": 2 }],
+		"max-nested-callbacks": "off",
+		"max-statements-per-line": "off",
 		"no-console": "off",
 		"no-empty-function": "error",
 		"no-floating-decimal": "error",
@@ -46,6 +46,7 @@
 		"space-infix-ops": "error",
 		"space-unary-ops": "error",
 		"spaced-comment": "error",
-		"yoda": "error"
+		"yoda": "error",
+		"require-yield":"off"
 	}
 }

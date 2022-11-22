@@ -2,5 +2,6 @@
   "compilerOptions": {
     "checkJs": true
   },
+  "include": ["**/*.js"],
   "exclude": ["node_modules", "**/node_modules/*"]
 }

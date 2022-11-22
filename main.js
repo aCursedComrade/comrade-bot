@@ -36,7 +36,6 @@ bot_client.on('interactionCreate', async (interaction) => {
     }
     catch (error) {
       logger.error(error.message);
-      // console.error(error);
       if (interaction.deferred) {
         await interaction.editReply({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
       }

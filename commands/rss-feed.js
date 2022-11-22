@@ -107,7 +107,7 @@ export async function handler(interaction) {
         if (callback.length > 0) {
           callback.forEach(item => {
             // create a field for each item
-            recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} in <#${item.channel_id}>` });
+            recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} ---> <#${item.channel_id}>` });
           });
         }
         else {
