@@ -49,7 +49,7 @@ bot_client.on('interactionCreate', async (interaction) => {
   }
 });
 
-bot_client.once('ready', () => {
+bot_client.on('ready', () => {
   logger.log(`Logged in as ${bot_client.user.tag}!`);
 });
 

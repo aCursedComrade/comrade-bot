@@ -10,7 +10,7 @@
   - `guildinfo` : Provide information about the current guild
   - `reddit` : Returns a random top meme from Reddit (may not be funny all the time)
   - `lengthen` : Lengthen a shortened link
-  - `fullhunt` : Use the FullHunt API (will be replaced)
+  - ~~`fullhunt` : Use the FullHunt API (will be replaced)~~ ([Legacy](legacy/fullhunt.js))
   - `rss-feed (list,create,delete)` : Set up and manage to post on RSS feed events
 - Message Context Commands:
   - `UwUify` : Oh god why did I make this

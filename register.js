@@ -21,9 +21,9 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
 
     // logger.log(commands);
     await rest.put(Routes.applicationCommands(process.env.ID), { body: commands });
-    logger.log('Successfully reloaded GLOBAL application (/) commands.');
+    logger.log('Successfully reloaded GLOBAL application commands.');
     // await rest.put(Routes.applicationGuildCommands(process.env.ID, process.env.TEST_GUILD), { body: testing });
-    // logger.log('Successfully reloaded TESTING application (/) commands.');
+    // logger.log('Successfully reloaded TESTING application commands.');
   }
   catch (error) {
     logger.error(error.message);
