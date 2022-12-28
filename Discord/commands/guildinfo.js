@@ -1,6 +1,4 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import logger_func from '../logger.js';
-const logger = new logger_func();
 
 export const data = new SlashCommandBuilder()
   .setName('guildinfo')
@@ -33,6 +31,6 @@ export async function handler(interaction) {
         .setFooter({ text: `Guild ID: ${guild.id}` })
         .setTimestamp();
       interaction.reply({ embeds: [embed.data], ephemeral: true });
-      logger.log(`/${data.name} command done`);
+      // console.log(`/${data.name} command done`);
     });
 }

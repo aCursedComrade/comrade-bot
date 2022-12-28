@@ -1,56 +1,15 @@
-import { Collection, codeBlock, InteractionType } from 'discord.js';
-import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
-import bot_client from './client.js';
-import logclass from './logger.js';
-import init_modules from './submodules/init.js';
-import 'dotenv/config';
+import server from './submodules/server.js';
+import init_mongoDB from './submodules/mongoDB.js';
+import feedReader from './submodules/feed-parser.js';
+import init_Discord from './Discord/init_Discord.js';
+import init_Telegram from './Telegram/init_Telegram.js';
 
-const logger = new logclass();
-init_modules();
-
-// Dynamically loading commands
-const commandset = new Collection();
-const cmdPath = join('commands');
-const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
-(async () => {
-  try {
-    for (const file of cmdFiles) {
-      const filePath = join(cmdPath, file);
-      const { data, handler } = await import(`./${filePath}`);
-      commandset.set(data.name, handler);
-    }
-    logger.log('Successfully loaded all commands.');
-  }
-  catch (error) {
-    logger.error(error.message);
-  }
+// Invoke all application modules
+(() => {
+  init_Discord();
+  init_Telegram();
+  // sub-modules
+  server();
+  init_mongoDB();
+  feedReader();
 })();
-
-// Event Handlers
-bot_client.on('interactionCreate', async (interaction) => {
-  if (interaction.type == InteractionType.ApplicationCommand) {
-    const handler = commandset.get(interaction.commandName);
-    try {
-      await handler(interaction);
-    }
-    catch (error) {
-      logger.error(error.message);
-      if (interaction.deferred) {
-        await interaction.editReply({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
-      }
-      else {
-        await interaction.reply({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
-      }
-    }
-  }
-  else {
-    return;
-  }
-});
-
-bot_client.on('ready', () => {
-  logger.log(`Logged in as ${bot_client.user.tag}!`);
-});
-
-bot_client.login(process.env.TOKEN);

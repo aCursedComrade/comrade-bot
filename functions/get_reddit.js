@@ -1,12 +1,12 @@
 import axios from 'axios';
+import { randomObj } from './multi.js';
 
-function random_ary(object) {
-  return Math.floor(Math.random() * object.length);
-}
-
-export async function get_reddit() {
-  const subs = ['memes', 'meme', 'dankmemes', 'Animemes'];
-  const response = await axios.get(`https://www.reddit.com/r/${subs[random_ary(subs)]}/hot.json`, {
+/**
+ * @returns {Promise<String>} Meme URL
+ */
+async function get_reddit() {
+  const subs = ['memes', 'meme', 'dankmemes', 'Animemes', 'Funnymemes'];
+  const response = await axios.get(`https://www.reddit.com/r/${subs[randomObj(subs)]}/hot.json`, {
     params: {
       g: 'GLOBAL',
       show: 'all',
@@ -17,10 +17,9 @@ export async function get_reddit() {
       if (post.data.domain) {
         return post.data.url;
       }
-      else {
-        return null;
-      }
     })
     .filter((post) => !!post);
-  return posts[random_ary(posts)];
+  return posts[randomObj(posts)];
 }
+
+export default get_reddit;

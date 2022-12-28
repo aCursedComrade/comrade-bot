@@ -1,7 +1,5 @@
 import { SlashCommandBuilder, AttachmentBuilder } from 'discord.js';
-import { get_fullhunt } from '../functions/get_fullhunt.js';
-import logger_func from '../logger.js';
-const logger = new logger_func();
+import get_fullhunt from '../functions/get_fullhunt.js';
 
 export const data = new SlashCommandBuilder()
   .setName('fullhunt')
@@ -32,5 +30,5 @@ export async function handler(interaction) {
   await interaction.editReply({
     files: [file],
   });
-  logger.log(`/${data.name} command done`);
+  // console.log(`/${data.name} command done`);
 }

@@ -1,9 +1,9 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-const bot_client = new Client({
+const discord_client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.DirectMessages,
   ],
 });
 
-export default bot_client;
+export default discord_client;

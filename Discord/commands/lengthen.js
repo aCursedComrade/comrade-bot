@@ -1,7 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import axios from 'axios';
-import logger_func from '../logger.js';
-const logger = new logger_func();
+import { lengthen } from '../../functions/multi.js';
 
 export const data = new SlashCommandBuilder()
   .setName('lengthen')
@@ -14,8 +12,9 @@ export const data = new SlashCommandBuilder()
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
 export async function handler(interaction) {
+  await interaction.deferReply();
   const url = interaction.options.getString('url');
-  const response = await axios.head(url);
-  await interaction.reply(response.request.res.responseUrl);
-  logger.log(`/${data.name} command done`);
+  const head = await lengthen(url);
+  await interaction.editReply({ content: head });
+  // console.log(`/${data.name} command done`);
 }

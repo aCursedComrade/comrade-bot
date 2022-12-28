@@ -1,10 +1,8 @@
 import { read } from 'feed-reader';
 import { ChannelType, EmbedBuilder, WebhookClient } from 'discord.js';
-import bot_client from '../client.js';
-import logclass from '../logger.js';
+import discord_client from '../Discord/client.js';
 import RSSObj from '../models/RSSObj.js';
 
-const logger = new logclass();
 const INTERVAL = 1000 * 60 * 10;
 
 // Validate and return the latest entry at initial setup
@@ -42,69 +40,70 @@ async function get_hook(hook_name, channel) {
   }
 }
 
-export async function feedReader() {
-  setInterval(() => {
-    RSSObj.find().exec(async (error, feed_list) => {
-      if (error) {
-        logger.error('Feed Parser (db_read): ' + error.message);
+async function postEvents(feed_list) {
+  for (const item of feed_list) {
+    const result = await read(item.rss_source, { descriptionMaxLen: 300, useISODateFormat: true }).catch(function(read_error) {
+      console.error('Feed Parser (read): ' + read_error.message);
+    });
+
+    // const guild = discord_client.guilds.cache.get(item.guild_id);
+    const channel = discord_client.channels.cache.get(item.channel_id);
+    if (channel && result) {
+      // create or fetch the appropiate webhook to post
+      const webhook = await get_hook(`${discord_client.user.tag} - RSS`, channel);
+      // console.log(webhook);
+      // find the index of the last update
+      const last_update = result.entries.findIndex((entry) => entry.title == item.last_update);
+      let new_entries = [];
+      if (last_update >= 0) {
+        // slice the array of entries upto the last update
+        new_entries = result.entries.slice(0, last_update);
       }
       else {
-        for (const item of feed_list) {
-          const result = await read(item.rss_source, { descriptionMaxLen: 300, useISODateFormat: true }).catch(function(read_error) {
-            logger.error('Feed Parser (read): ' + read_error.message);
+        // else take the top 5 if somehow we cannot find the last update (theres a lot of updates)
+        new_entries = result.entries.slice(0, 5);
+      }
+
+      // reverse the entries the so older ones are posted first
+      for (const entry of new_entries.reverse()) {
+        const event_embed = new EmbedBuilder()
+          .setAuthor({ name: result.title, url: result.link || null })
+          .setTitle(entry.title)
+          .setURL(entry.link)
+          .setDescription(entry.description);
+        // console.log([event_embed.data]);
+        try {
+          await webhook.send({
+            avatarURL: discord_client.user.displayAvatarURL({ size: 4096 }),
+            embeds: [event_embed.data],
           });
-
-          // const guild = bot_client.guilds.cache.get(item.guild_id);
-          const channel = bot_client.channels.cache.get(item.channel_id);
-          if (channel && result) {
-            // create or fetch the appropiate webhook to post
-            const webhook = await get_hook(`${bot_client.user.tag} - RSS`, channel);
-            // console.log(webhook);
-
-            // find the index of the last update
-            const last_update = result.entries.findIndex((entry) => entry.title == item.last_update);
-            let new_entries = [];
-            if (last_update >= 0) {
-              // slice the array of entries upto the last update
-              new_entries = result.entries.slice(0, last_update);
-            }
-            else {
-              // else take the top 5 if somehow we cannot find the last update (theres a lot of updates)
-              new_entries = result.entries.slice(0, 5);
-            }
-
-            // reverse the entries the so older ones are posted first
-            for (const entry of new_entries.reverse()) {
-              const event_embed = new EmbedBuilder()
-                .setAuthor({ name: result.title, url: result.link || null })
-                .setTitle(entry.title)
-                .setURL(entry.link)
-                .setDescription(entry.description);
-              // console.log([event_embed.data]);
-              try {
-                await webhook.send({
-                  avatarURL: bot_client.user.displayAvatarURL({ size: 4096 }),
-                  embeds: [event_embed.data],
-                });
-              }
-              catch (post_error) {
-                logger.error('Feed Parser (post):' + post_error.message);
-                // console.error(post_error);
-              }
-            }
-
-            // take latest entry and update the databse regardless of the above
-            // previous posts may be emitted again if the feed author updated the post
-            if (result) {
-              RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title }).exec((update_error) => {
-                if (update_error) {
-                  logger.error('Feed Parser (update):' + update_error.message);
-                }
-              });
-            }
-          }
+        }
+        catch (post_error) {
+          console.error('Feed Parser (post):' + post_error.message);
+          // console.error(post_error);
         }
       }
+
+      // take latest entry and update the databse regardless of the above
+      // previous posts may be emitted again if the feed author updated the post
+      if (result) {
+        RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title }).exec((update_error) => {
+          if (update_error) {
+            console.error('Feed Parser (update):' + update_error.message);
+          }
+        });
+      }
+    }
+  }
+}
+
+async function feedReader() {
+  setInterval(() => {
+    RSSObj.find().exec(async (error, feed_list) => {
+      // console.log(typeof(feed_list));
+      error?.message ? console.error('Feed Parser (db_read): ' + error.message) : await postEvents(feed_list);
     });
   }, INTERVAL);
 }
+
+export default feedReader;

@@ -1,9 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, inlineCode, ChannelType } from 'discord.js';
-import RSSObj from '../models/RSSObj.js';
-import logclass from '../logger.js';
-import { get_latest } from '../submodules/feed-parser.js';
-import bot_client from '../client.js';
-const logger = new logclass();
+import RSSObj from '../../models/RSSObj.js';
+import { get_latest } from '../../submodules/feed-parser.js';
+import discord_client from '../client.js';
 
 export const data = new SlashCommandBuilder()
   .setName('rss-feed')
@@ -81,10 +79,10 @@ export async function handler(interaction) {
           await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
           // webhook cleanup
           const exists = await RSSObj.find({ channel_id: callback.channel_id }).exec();
-          const channel = await bot_client.channels.cache.get(callback.channel_id).fetch();
+          const channel = await discord_client.channels.cache.get(callback.channel_id).fetch();
           if (exists.length < 1 && channel.type == ChannelType.GuildText) {
             const webhooks = await channel.fetchWebhooks();
-            const rss = webhooks.find(hook => hook.name === `${bot_client.user.tag} - RSS`);
+            const rss = webhooks.find(hook => hook.name === `${discord_client.user.tag} - RSS`);
             if (rss != undefined) { rss.delete(); }
           }
         }
@@ -122,5 +120,5 @@ export async function handler(interaction) {
       }
     });
   }
-  logger.log(`/${data.name} command done`);
+  // console.log(`/${data.name} command done`);
 }

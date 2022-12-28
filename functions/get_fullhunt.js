@@ -1,7 +1,7 @@
 import axios from 'axios';
 import 'dotenv/config';
 
-export async function get_fullhunt(method, target) {
+async function get_fullhunt(method, target) {
   const basePath = 'https://fullhunt.io/api/v1';
   let response = null;
   switch (method) {
@@ -32,3 +32,5 @@ export async function get_fullhunt(method, target) {
   }
   return response.data;
 }
+
+export default get_fullhunt;
