@@ -9,19 +9,19 @@ const cmdPath = `${process.cwd()}/Discord/commands/`;
 const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
 
 (async () => {
-  try {
-    for (const file of cmdFiles) {
-      const { data } = await import(`${cmdPath + file}`);
-      commands.push(data);
-    }
+    try {
+        for (const file of cmdFiles) {
+            const { data } = await import(`${cmdPath + file}`);
+            commands.push(data);
+        }
 
-    // console.log(commands);
-    await rest.put(Routes.applicationCommands(process.env.ID), { body: commands });
-    console.log('Successfully reloaded GLOBAL Discord application commands.');
+        // console.log(commands);
+        await rest.put(Routes.applicationCommands(process.env.ID), { body: commands });
+        console.log('Successfully reloaded GLOBAL Discord application commands.');
     // await rest.put(Routes.applicationGuildCommands(process.env.ID, process.env.TEST_GUILD), { body: testing });
     // console.log('Successfully reloaded TESTING application commands.');
-  }
-  catch (error) {
-    console.error(error.message);
-  }
+    }
+    catch (error) {
+        console.error(error.message);
+    }
 })();

@@ -6,10 +6,10 @@ import init_Telegram from './Telegram/init_Telegram.js';
 
 // Invoke all application modules
 (() => {
-  init_Discord();
-  init_Telegram();
-  // sub-modules
-  server();
-  init_mongoDB();
-  feedReader();
+    init_Discord();
+    init_Telegram();
+    // sub-modules
+    server();
+    init_mongoDB();
+    feedReader();
 })();

@@ -1,7 +1,5 @@
 {
-  "name": "infosec-bot",
-  "version": "1.0.0",
-  "description": "",
+  "name": "Comrade-Bot",
   "main": "./main.js",
   "type": "module",
   "engines": {
