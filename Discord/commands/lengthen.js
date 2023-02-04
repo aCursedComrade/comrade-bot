@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { lengthen } from '../../functions/multi.js';
+import { lengthen } from '../../functions/util.js';
 
 export const data = new SlashCommandBuilder()
     .setName('lengthen')

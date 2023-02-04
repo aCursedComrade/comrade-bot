@@ -1,10 +1,10 @@
 import { Collection, codeBlock, InteractionType } from 'discord.js';
 import { readdirSync } from 'node:fs';
-import discord_client from './client.js';
+import client from './client.js';
 import 'dotenv/config';
 
 // Dynamically loading commands
-async function init_Discord() {
+async function init() {
     const commandset = new Collection();
     const cmdPath = `${process.cwd()}/Discord/commands/`;
     const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
@@ -24,7 +24,7 @@ async function init_Discord() {
     })();
 
     // Event Handlers
-    discord_client.on('interactionCreate', async (interaction) => {
+    client.on('interactionCreate', async (interaction) => {
         if (interaction.type == InteractionType.ApplicationCommand) {
             const handler = commandset.get(interaction.commandName);
             try {
@@ -45,11 +45,11 @@ async function init_Discord() {
         }
     });
 
-    discord_client.on('ready', () => {
-        console.log(`Discord: Logged in as ${discord_client.user.tag}`);
+    client.on('ready', () => {
+        console.log(`Discord: Logged in as ${client.user.tag}`);
     });
 
-    discord_client.login(process.env.TOKEN);
+    client.login(process.env.TOKEN);
 }
 
-export default init_Discord;
+export default init;

@@ -3,7 +3,7 @@ import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 export const data = new SlashCommandBuilder()
     .setName('userinfo')
     .setDMPermission(false)
-    .setDescription('Retrieves information about the user.')
+    .setDescription('Display information about the user.')
     .addUserOption(option => option
         .setName('user')
         .setDescription('Select a guild member. If not specified, returns the current user.')
@@ -17,7 +17,7 @@ export async function handler(interaction) {
         .then(async (member) => {
             const roles = member.roles.cache.map(role => role).toString().replace(/,/g, ' ') || '(User has no roles)';
             const embed = new EmbedBuilder()
-                .setAuthor({ name: `${member.user.username}#${member.user.discriminator}` })
+                .setTitle(member.user.tag)
                 .setColor(member.displayColor)
                 .setThumbnail(member.displayAvatarURL({ size: 4096 }))
                 .setDescription(`${member.user}`)

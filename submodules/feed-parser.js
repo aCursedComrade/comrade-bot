@@ -1,9 +1,10 @@
 import { read } from 'feed-reader';
 import { ChannelType, EmbedBuilder, WebhookClient } from 'discord.js';
-import discord_client from '../Discord/client.js';
+import client from '../Discord/client.js';
 import RSSObj from '../models/RSSObj.js';
 
 const INTERVAL = 1000 * 60 * 10;
+const WEBHOOK = 'RSS Event (Comrade Bot)';
 
 // Validate and return the latest entry at initial setup
 /**
@@ -47,10 +48,10 @@ async function postEvents(feed_list) {
         });
 
         // const guild = discord_client.guilds.cache.get(item.guild_id);
-        const channel = discord_client.channels.cache.get(item.channel_id);
+        const channel = client.channels.cache.get(item.channel_id);
         if (channel && result) {
             // create or fetch the appropiate webhook to post
-            const webhook = await get_hook(`${discord_client.user.tag} - RSS`, channel);
+            const webhook = await get_hook(WEBHOOK, channel);
             // console.log(webhook);
             // find the index of the last update
             const last_update = result.entries.findIndex((entry) => entry.title == item.last_update);
@@ -74,7 +75,7 @@ async function postEvents(feed_list) {
                 // console.log([event_embed.data]);
                 try {
                     await webhook.send({
-                        avatarURL: discord_client.user.displayAvatarURL({ size: 4096 }),
+                        avatarURL: client.user.displayAvatarURL({ size: 4096 }),
                         embeds: [event_embed.data],
                     });
                 }

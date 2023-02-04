@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, AttachmentBuilder } from 'discord.js';
-import get_fullhunt from '../functions/get_fullhunt.js';
+import get_fullhunt from './get_fullhunt.js';
 
 export const data = new SlashCommandBuilder()
     .setName('fullhunt')

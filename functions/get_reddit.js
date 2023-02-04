@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { randomObj } from './multi.js';
+import { randomObj } from './util.js';
 
 /**
  * @returns {Promise<String>} Meme URL

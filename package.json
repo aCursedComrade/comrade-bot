@@ -19,7 +19,6 @@
     "feed-reader": "^6.1.2",
     "luxon": "^3.1.0",
     "mongoose": "^6.7.1",
-    "telegraf": "^4.11.2",
     "uwuifier": "^4.0.5"
   },
   "devDependencies": {
