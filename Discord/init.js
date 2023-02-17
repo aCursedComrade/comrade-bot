@@ -4,7 +4,7 @@ import client from './client.js';
 import 'dotenv/config';
 
 // Dynamically loading commands
-async function init() {
+function init() {
     const commandset = new Collection();
     const cmdPath = `${process.cwd()}/Discord/commands/`;
     const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));

@@ -21,7 +21,7 @@ function uptime() {
  */
 export async function handler(interaction) {
     const embed = new EmbedBuilder()
-        .setTitle(client.user.tag)
+        .setTitle(client.user.username)
         .setThumbnail(client.user.displayAvatarURL({ size: 4096 }))
         .setDescription('Made by [aCursed_Comrade#8655](https://acursedcomrade.github.io) because he was bored.')
         .setFields([
