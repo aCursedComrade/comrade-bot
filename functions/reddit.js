@@ -4,12 +4,15 @@ import { randomObj } from './util.js';
 /**
  * @returns {Promise<String>} Meme URL
  */
-async function get_reddit() {
+export async function get_reddit() {
     const subs = ['memes', 'meme', 'dankmemes', 'Animemes', 'Funnymemes'];
     const response = await axios.get(`https://www.reddit.com/r/${subs[randomObj(subs)]}/hot.json`, {
         params: {
             g: 'GLOBAL',
             show: 'all',
+        },
+        headers: {
+            'User-Agent': 'Comrade Bot (https://github.com/aCursedComrade/Comrade-Bot)',
         },
     });
     const posts = response.data.data.children
@@ -21,5 +24,3 @@ async function get_reddit() {
         .filter((post) => !!post);
     return posts[randomObj(posts)];
 }
-
-export default get_reddit;

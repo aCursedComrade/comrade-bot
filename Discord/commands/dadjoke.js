@@ -1,5 +1,18 @@
 import { SlashCommandBuilder } from 'discord.js';
-import get_dadjoke from '../../functions/get_dadjoke.js';
+import axios from 'axios';
+
+async function get_dadjoke() {
+    let out = '';
+    const response = await axios.get('https://icanhazdadjoke.com/', {
+        headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'Comrade Bot (https://github.com/aCursedComrade/Comrade-Bot)',
+        },
+    });
+
+    response.data?.joke ? out = response.data.joke : out = 'Something went wrong :(\nTry again?';
+    return out;
+}
 
 export const data = new SlashCommandBuilder()
     .setName('dadjoke')

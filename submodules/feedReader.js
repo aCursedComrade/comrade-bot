@@ -1,9 +1,9 @@
-import { read } from 'feed-reader';
+import { extract } from '@extractus/feed-extractor';
 import { ChannelType, EmbedBuilder, WebhookClient } from 'discord.js';
 import client from '../Discord/client.js';
 import RSSObj from '../models/RSSObj.js';
 
-const INTERVAL = 1000 * 60 * 10;
+const INTERVAL = 1000 * 60 * 30;
 
 // Validate and return the latest entry at initial setup
 /**
@@ -12,7 +12,7 @@ const INTERVAL = 1000 * 60 * 10;
  */
 export async function get_latest(url) {
     try {
-        const feeddata = await read(url, { descriptionMaxLen: 100 });
+        const feeddata = await extract(url, { descriptionMaxLen: 100 });
         return feeddata.entries[0].title;
     }
     catch {
@@ -43,9 +43,17 @@ async function get_hook(hook_name, channel) {
 async function postEvents(feed_list) {
     const WEBHOOK = `RSS Event (${client.user.username})`;
     for (const item of feed_list) {
-        const result = await read(item.rss_source, { descriptionMaxLen: 300, useISODateFormat: true }).catch(function(read_error) {
-            console.error('Feed Parser (read): ' + read_error.message);
+        const result = await extract(item.rss_source, { descriptionMaxLen: 200 }, {
+            headers: {
+                'User-Agent': 'Comrade Bot (https://github.com/aCursedComrade/Comrade-Bot)',
+            },
+        }).catch(function(read_error) {
+            console.error(`Feed Parser (read: ${item.rss_source}): ${read_error.message}`);
         });
+
+        if (result == null || undefined) {
+            continue;
+        }
 
         // const guild = discord_client.guilds.cache.get(item.guild_id);
         const channel = client.channels.cache.get(item.channel_id);
@@ -72,7 +80,6 @@ async function postEvents(feed_list) {
                     .setTitle(entry.title)
                     .setURL(entry.link)
                     .setDescription(entry.description);
-                // console.log([event_embed.data]);
                 try {
                     await webhook.send({
                         avatarURL: client.user.displayAvatarURL({ size: 4096 }),
@@ -80,8 +87,7 @@ async function postEvents(feed_list) {
                     });
                 }
                 catch (post_error) {
-                    console.error('Feed Parser (post):' + post_error.message);
-                    // console.error(post_error);
+                    console.error(`Feed Parser (post): ${post_error.message}`);
                 }
             }
 
@@ -90,7 +96,7 @@ async function postEvents(feed_list) {
             if (result) {
                 RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title }).exec((update_error) => {
                     if (update_error) {
-                        console.error('Feed Parser (update):' + update_error.message);
+                        console.error(`Feed Parser (update): ${update_error.message}`);
                     }
                 });
             }
@@ -102,7 +108,7 @@ async function feedReader() {
     setInterval(() => {
         RSSObj.find().exec(async (error, feed_list) => {
             // console.log(typeof(feed_list));
-            error?.message ? console.error('Feed Parser (db_read): ' + error.message) : await postEvents(feed_list);
+            error?.message ? console.error(`Feed Parser (db_read): ${error.message}`) : await postEvents(feed_list);
         });
     }, INTERVAL);
 }

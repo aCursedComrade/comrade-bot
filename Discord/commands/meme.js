@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import get_reddit from '../../functions/get_reddit.js';
+import { get_reddit } from '../../functions/reddit.js';
 
 export const data = new SlashCommandBuilder()
     .setName('meme')

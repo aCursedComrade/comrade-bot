@@ -23,12 +23,11 @@ export async function handler(interaction) {
     const embed = new EmbedBuilder()
         .setTitle(client.user.username)
         .setThumbnail(client.user.displayAvatarURL({ size: 4096 }))
-        .setDescription('Made by [aCursed_Comrade#8655](https://acursedcomrade.github.io) because he was bored.')
+        .setDescription('Made by [aCursed_Comrade#8655](https://acursedcomrade.github.io/about/) because he was bored.')
         .setFields([
             { name: 'Source:', value: '[Github](https://github.com/aCursedComrade/Comrade-Bot)' },
             { name: 'Total Servers:', value: client.guilds.cache.size.toString() },
             { name: 'Uptime:', value: uptime() },
-            { name: 'Host:', value: `${process.platform}-${process.arch}` },
             { name: 'Ping:', value: `${client.ws.ping} ms` },
         ])
         .setFooter({ text: `Client ID: ${client.user.id}` })

@@ -18,8 +18,6 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
         // console.log(commands);
         await rest.put(Routes.applicationCommands(process.env.ID), { body: commands });
         console.log('Successfully reloaded GLOBAL Discord application commands.');
-    // await rest.put(Routes.applicationGuildCommands(process.env.ID, process.env.TEST_GUILD), { body: testing });
-    // console.log('Successfully reloaded TESTING application commands.');
     }
     catch (error) {
         console.error(error.message);

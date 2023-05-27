@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
     .setDescription('RSS event management.')
     .addSubcommand(subcmd => subcmd
         .setName('create')
-        .setDescription('Set up a RSS feed for the guild.')
+        .setDescription('Set up a RSS feed (RSS/Atom/JSON).')
         .addChannelOption(option => option
             .setName('channel')
             .setDescription('Select the channel to post events.')
@@ -53,12 +53,12 @@ export async function handler(interaction) {
                     await interaction.editReply(`Feed events from \`${feed_url}\` will be posted in <#${channel}> from now on.`);
                 }
                 else {
-                    await interaction.editReply(`Unable to resolve \`${feed_url}\` as a RSS feed. Most likely it is an invalid RSS feed or a server-side error.`);
+                    await interaction.editReply(`Unable to resolve \`${feed_url}\` as a RSS feed. It could be an invalid RSS feed or a server-side error.`);
                 }
             }
             catch (error) {
                 console.error(error.message);
-                await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
+                await interaction.editReply('An error occured');
             }
         }
         else {
@@ -74,7 +74,7 @@ export async function handler(interaction) {
             RSSObj.findByIdAndDelete(rssId).exec(async (error, callback) => {
                 if (error) {
                     console.error(error.message);
-                    await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
+                    await interaction.editReply('An error occured');
                 }
                 else {
                     await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
@@ -99,14 +99,14 @@ export async function handler(interaction) {
         RSSObj.find({ guild_id: interaction.guild.id }).exec(async (error, callback) => {
             if (error) {
                 console.error(error.message);
-                await interaction.editReply(`An error occured :: ${inlineCode(error.message)}`);
+                await interaction.editReply('An error occured');
             }
             else {
                 const recordFields = [];
                 if (callback.length > 0) {
                     callback.forEach(item => {
                         // create a field for each item
-                        recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} ---> <#${item.channel_id}>` });
+                        recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} posted in <#${item.channel_id}>` });
                     });
                 }
                 else {
@@ -114,12 +114,11 @@ export async function handler(interaction) {
                 }
                 const embed = new EmbedBuilder()
                     .setTitle('RSS Feeds')
-                    .setDescription('Configured RSS feeds for this guild. All sources are looked up every 10 minutes.')
+                    .setDescription('Configured RSS feeds for this guild. All sources are looked up every 30 minutes.')
                     .setFooter({ text: `${interaction.guild.name}`, iconURL: interaction.guild.iconURL() })
                     .setFields(recordFields);
                 await interaction.editReply({ embeds: [embed.data] });
             }
         });
     }
-    // console.log(`/${data.name} command done`);
 }
