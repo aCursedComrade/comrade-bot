@@ -71,22 +71,19 @@ export async function handler(interaction) {
             await interaction.deferReply();
             const WEBHOOK = `RSS Event (${client.user.username})`;
             const rssId = interaction.options.getString('rss-id');
-            RSSObj.findByIdAndDelete(rssId).exec(async (error, callback) => {
-                if (error) {
-                    console.error(error.message);
-                    await interaction.editReply('An error occured');
+            RSSObj.findByIdAndDelete(rssId).then(async (callback) => {
+                await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
+                // webhook cleanup
+                const exists = await RSSObj.find({ channel_id: callback.channel_id }).exec();
+                const channel = await client.channels.cache.get(callback.channel_id).fetch();
+                if (exists.length < 1 && channel.type == ChannelType.GuildText) {
+                    const webhooks = await channel.fetchWebhooks();
+                    const rss = webhooks.find(hook => hook.name === WEBHOOK);
+                    if (rss != undefined) { rss.delete(); }
                 }
-                else {
-                    await interaction.editReply(`Removed ${inlineCode(callback.rss_source)} from <#${callback.channel_id}>.`);
-                    // webhook cleanup
-                    const exists = await RSSObj.find({ channel_id: callback.channel_id }).exec();
-                    const channel = await client.channels.cache.get(callback.channel_id).fetch();
-                    if (exists.length < 1 && channel.type == ChannelType.GuildText) {
-                        const webhooks = await channel.fetchWebhooks();
-                        const rss = webhooks.find(hook => hook.name === WEBHOOK);
-                        if (rss != undefined) { rss.delete(); }
-                    }
-                }
+            }).catch(async (error) => {
+                console.error(error.message);
+                await interaction.editReply('An error occured');
             });
         }
         else {
@@ -96,29 +93,26 @@ export async function handler(interaction) {
     else if (interaction.options.getSubcommand() === 'list') {
     // list rss handler
         await interaction.deferReply();
-        RSSObj.find({ guild_id: interaction.guild.id }).exec(async (error, callback) => {
-            if (error) {
-                console.error(error.message);
-                await interaction.editReply('An error occured');
+        RSSObj.find({ guild_id: interaction.guild.id }).then(async (callback) => {
+            const recordFields = [];
+            if (callback.length > 0) {
+                callback.forEach(item => {
+                    // create a field for each item
+                    recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} posted in <#${item.channel_id}>` });
+                });
             }
             else {
-                const recordFields = [];
-                if (callback.length > 0) {
-                    callback.forEach(item => {
-                        // create a field for each item
-                        recordFields.push({ name: `ID: ${item._id}`, value: `${inlineCode(item.rss_source)} posted in <#${item.channel_id}>` });
-                    });
-                }
-                else {
-                    recordFields.push({ name: 'No RSS feeds', value: 'Use the "/rss create" command to add RSS feeds to your guild.' });
-                }
-                const embed = new EmbedBuilder()
-                    .setTitle('RSS Feeds')
-                    .setDescription('Configured RSS feeds for this guild. All sources are looked up every 30 minutes.')
-                    .setFooter({ text: `${interaction.guild.name}`, iconURL: interaction.guild.iconURL() })
-                    .setFields(recordFields);
-                await interaction.editReply({ embeds: [embed.data] });
+                recordFields.push({ name: 'No RSS feeds', value: 'Use the "/rss create" command to add RSS feeds to your guild.' });
             }
+            const embed = new EmbedBuilder()
+                .setTitle('RSS Feeds')
+                .setDescription('Configured RSS feeds for this guild. All sources are looked up every 30 minutes.')
+                .setFooter({ text: `${interaction.guild.name}`, iconURL: interaction.guild.iconURL() })
+                .setFields(recordFields);
+            await interaction.editReply({ embeds: [embed.data] });
+        }).catch(async (error) => {
+            console.error(error.message);
+            await interaction.editReply('An error occured');
         });
     }
 }

@@ -94,10 +94,8 @@ async function postEvents(feed_list) {
             // take latest entry and update the databse regardless of the above
             // previous posts may be emitted again if the feed author updated the post
             if (result) {
-                RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title }).exec((update_error) => {
-                    if (update_error) {
-                        console.error(`Feed Parser (update): ${update_error.message}`);
-                    }
+                RSSObj.findByIdAndUpdate(item._id, { last_update: result.entries[0].title }).catch((error) => {
+                    console.error(`Feed Parser (update): ${error.message}`);
                 });
             }
         }
@@ -106,9 +104,10 @@ async function postEvents(feed_list) {
 
 async function feedReader() {
     setInterval(() => {
-        RSSObj.find().exec(async (error, feed_list) => {
-            // console.log(typeof(feed_list));
-            error?.message ? console.error(`Feed Parser (db_read): ${error.message}`) : await postEvents(feed_list);
+        RSSObj.find().then(async (feed_list) => {
+            await postEvents(feed_list);
+        }).catch((error) => {
+            console.error(`Feed Parser (db_read): ${error.message}`);
         });
     }, INTERVAL);
 }
