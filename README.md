@@ -6,7 +6,7 @@
 - `ping` : The game of ping-pong 
 - `userinfo` : Provide information about the given guild user 
 - `guildinfo` : Provide information about the current guild 
-- `meme` : Returns a random HOT meme from Reddit (may not be funny all the time) 
+- `meme` : Hot meme from r/dankmemes
 - `lengthen` : Lengthen a shortened link 
 - ~~`fullhunt` : Use the FullHunt API~~ ([Legacy](legacy/fullhunt.js))
 - `rss (list,create,delete)` : Set up and manage to post on RSS feed events 

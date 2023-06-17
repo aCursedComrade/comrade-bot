@@ -45,7 +45,7 @@ async function postEvents(feed_list) {
     for (const item of feed_list) {
         const result = await extract(item.rss_source, { descriptionMaxLen: 200 }, {
             headers: {
-                'User-Agent': 'Comrade Bot (https://github.com/aCursedComrade/Comrade-Bot)',
+                'User-Agent': 'Comrade Bot',
             },
         }).catch(function(read_error) {
             console.error(`Feed Parser (read: ${item.rss_source}): ${read_error.message}`);

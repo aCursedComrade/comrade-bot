@@ -2,25 +2,28 @@ import axios from 'axios';
 import { randomObj } from './util.js';
 
 /**
- * @returns {Promise<String>} Meme URL
+ * @returns {Promise<Object|undefined>} Meme URL
  */
 export async function get_reddit() {
-    const subs = ['memes', 'meme', 'dankmemes', 'Animemes', 'Funnymemes'];
-    const response = await axios.get(`https://www.reddit.com/r/${subs[randomObj(subs)]}/hot.json`, {
+    // const subs = ['memes', 'meme', 'dankmemes', 'Animemes', 'Funnymemes'];
+    return await axios.get('https://www.reddit.com/r/dankmemes/hot.json', {
         params: {
             g: 'GLOBAL',
             show: 'all',
+            limit: 30,
         },
         headers: {
-            'User-Agent': 'Comrade Bot (https://github.com/aCursedComrade/Comrade-Bot)',
+            'User-Agent': 'Comrade Bot',
         },
-    });
-    const posts = response.data.data.children
-        .map((post) => {
-            if (post.data.domain) {
-                return post.data.url;
+    }).then((res) => {
+        const posts = res.data.data.children.map((post) => {
+            if (post.data.post_hint == 'image') {
+                return post.data;
             }
-        })
-        .filter((post) => !!post);
-    return posts[randomObj(posts)];
+        }).filter((post) => !!post);
+        return posts[randomObj(posts)];
+    }).catch(e => {
+        console.error(e.message);
+        return undefined;
+    });
 }

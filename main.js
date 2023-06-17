@@ -5,9 +5,10 @@ import init from './Discord/init.js';
 
 // Invoke all application modules
 (() => {
-    init();
     // sub-modules
     server();
     init_mongoDB();
     feedReader();
+
+    init();
 })();
