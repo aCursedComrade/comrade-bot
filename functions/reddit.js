@@ -13,7 +13,10 @@ export async function get_reddit() {
             limit: 30,
         },
         headers: {
-            'User-Agent': 'Comrade Bot',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0 Bot',
+            'Accept': 'application/json',
+            'Upgrade-Insecure-Requests': '1',
+            'Referer': 'https://www.google.com',
         },
     }).then((res) => {
         const posts = res.data.data.children.map((post) => {

@@ -4,8 +4,8 @@ import axios from 'axios';
 async function get_dadjoke() {
     const response = await axios.get('https://icanhazdadjoke.com/', {
         headers: {
-            'Accept': 'application/json',
             'User-Agent': 'Comrade Bot',
+            'Accept': 'application/json',
         },
     });
 

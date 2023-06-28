@@ -45,7 +45,10 @@ async function postEvents(feed_list) {
     for (const item of feed_list) {
         const result = await extract(item.rss_source, { descriptionMaxLen: 200 }, {
             headers: {
-                'User-Agent': 'Comrade Bot',
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0',
+                'Accept': 'text/html,application/xhtml+xml,application/xml',
+                'Upgrade-Insecure-Requests': '1',
+                'Referer': 'https://www.google.com',
             },
         }).catch(function(read_error) {
             console.error(`Feed Parser (read: ${item.rss_source}): ${read_error.message}`);
