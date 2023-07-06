@@ -20,3 +20,11 @@ export async function lengthen(url) {
 export function randomObj(object) {
     return Math.floor(Math.random() * object.length);
 }
+
+/**
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+export function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
