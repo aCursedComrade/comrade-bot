@@ -115,7 +115,7 @@ export async function handler(interaction) {
                     .setFields(recordFields);
                 await interaction.editReply({
                     content:
-                        '**NOTE:** Make sure that I have permission to send messages in each specified channels, otherwise you will not see any feed data.',
+                        '**NOTE:** Make sure that I have permission to send messages in each specified channel, otherwise you will not see any feed data.',
                     embeds: [embed.data],
                 });
             })

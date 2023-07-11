@@ -77,7 +77,7 @@ async function postEvents(record) {
                 .setAuthor({ name: result.title, url: result.link || null })
                 .setTitle(entry.title)
                 .setURL(entry.link)
-                .setDescription(entry.description)
+                .setDescription(entry.description || 'No description')
                 .setTimestamp(entry.published);
 
             client.channels
