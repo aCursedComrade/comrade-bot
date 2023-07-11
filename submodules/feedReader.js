@@ -4,7 +4,7 @@ import client from '../Discord/client.js';
 import RSSObj from '../models/RSSObj.js';
 import { timeout } from '../functions/util.js';
 
-const INTERVAL = 1000 * 60 * 30;
+const INTERVAL = 1000 * 1 * 30;
 
 // Validate and return the latest entry at initial setup
 /**
@@ -50,8 +50,8 @@ async function postEvents(record) {
     });
 
     if (result) {
-        // reduce the new FeedData to new ones and post them
-        for (const entry of result.entries.reduce(
+        // reduce the result to new entries
+        const newData = result.entries.reduce(
             /**
              * @param {import('@extractus/feed-extractor').FeedEntry[]} filtered
              * @param {import('@extractus/feed-extractor').FeedEntry} post
@@ -59,6 +59,7 @@ async function postEvents(record) {
              */
             function (filtered, post) {
                 post.published = new Date(post.published);
+                record.last_update = new Date(record.last_update);
 
                 if (!record.last_update) {
                     const offset = new Date(Date.now());
@@ -72,7 +73,10 @@ async function postEvents(record) {
                 return filtered;
             },
             [],
-        )) {
+        );
+
+        // post new entries
+        for (const entry of newData.reverse()) {
             const news = new EmbedBuilder()
                 .setAuthor({ name: result.title, url: result.link || null })
                 .setTitle(entry.title)
@@ -91,7 +95,7 @@ async function postEvents(record) {
                     console.error(`Feed Parser (post): ${error.message}`);
                 });
 
-            await timeout(1000 * 5);
+            await timeout(1000 * 3);
         }
 
         // if we got back any new FeedData, update the last_update field
@@ -104,7 +108,7 @@ async function postEvents(record) {
 async function feedReader() {
     setInterval(() => {
         RSSObj.find()
-            .then(async (feed_list) => {
+            .then((feed_list) => {
                 for (const record of feed_list) {
                     postEvents(record.toJSON());
                 }
