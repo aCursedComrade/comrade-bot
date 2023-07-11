@@ -4,7 +4,7 @@ import client from '../Discord/client.js';
 import RSSObj from '../models/RSSObj.js';
 import { timeout } from '../functions/util.js';
 
-const INTERVAL = 1000 * 1 * 30;
+const INTERVAL = 1000 * 60 * 30;
 
 // Validate and return the latest entry at initial setup
 /**
