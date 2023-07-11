@@ -2,9 +2,7 @@ import { ContextMenuCommandBuilder, ApplicationCommandType } from 'discord.js';
 import Uwuifier from 'uwuifier';
 
 // why did i make this
-export const data = new ContextMenuCommandBuilder()
-    .setName('UwUify')
-    .setType(ApplicationCommandType.Message);
+export const data = new ContextMenuCommandBuilder().setName('UwUify').setType(ApplicationCommandType.Message);
 /**
  * @param {import('discord.js').MessageContextMenuCommandInteraction} interaction
  */

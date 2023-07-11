@@ -1,8 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 
-export const data = new SlashCommandBuilder()
-    .setName('ping')
-    .setDescription('Replies with Pong!');
+export const data = new SlashCommandBuilder().setName('ping').setDescription('Replies with Pong!');
 /**
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */

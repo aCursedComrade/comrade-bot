@@ -1,17 +1,15 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import client from '../client.js';
 
-export const data = new SlashCommandBuilder()
-    .setName('info')
-    .setDescription('Display information about the bot');
+export const data = new SlashCommandBuilder().setName('info').setDescription('Display information about the bot');
 
 function uptime() {
     const up = Math.floor(process.uptime());
 
     const d = Math.floor(up / 3600 / 24);
-    const h = Math.floor(up / 3600 % 24);
-    const m = Math.floor(up % 3600 / 60);
-    const s = Math.floor(up % 3600 % 60);
+    const h = Math.floor((up / 3600) % 24);
+    const m = Math.floor((up % 3600) / 60);
+    const s = Math.floor((up % 3600) % 60);
 
     return `${d} days ${h} hours ${m} minutes ${s} seconds`;
 }

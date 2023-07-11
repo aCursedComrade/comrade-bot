@@ -1,10 +1,10 @@
 {
-  "compilerOptions": {
-    "checkJs": true,
-    "allowJs": true,
-    "module": "ES2022",
-    "target": "ES2022",
-    "moduleResolution": "node"
-  },
-  "exclude": ["node_modules/*"]
+    "compilerOptions": {
+        "checkJs": true,
+        "allowJs": true,
+        "module": "ES2022",
+        "target": "ES2022",
+        "moduleResolution": "node"
+    },
+    "exclude": ["node_modules/*"]
 }

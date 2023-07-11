@@ -5,16 +5,14 @@ async function get_dadjoke() {
     const response = await axios.get('https://icanhazdadjoke.com/', {
         headers: {
             'User-Agent': 'Comrade Bot',
-            'Accept': 'application/json',
+            Accept: 'application/json',
         },
     });
 
     return response.data?.joke ? response.data.joke : 'Something went wrong. Try again?';
 }
 
-export const data = new SlashCommandBuilder()
-    .setName('dadjoke')
-    .setDescription('You wanna hear a dad joke?');
+export const data = new SlashCommandBuilder().setName('dadjoke').setDescription('You wanna hear a dad joke?');
 /**
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */

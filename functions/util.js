@@ -9,8 +9,7 @@ export async function lengthen(url) {
     try {
         const response = await axios.head(url);
         out = response.request.res.responseUrl;
-    }
-    catch (error) {
+    } catch (error) {
         out = 'That was an invalid URL or a server-side error, please try again.';
     }
 
@@ -26,5 +25,5 @@ export function randomObj(object) {
  * @returns {Promise<void>}
  */
 export function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }

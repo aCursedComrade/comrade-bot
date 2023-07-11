@@ -7,7 +7,7 @@ const rest = new REST().setToken(process.env.TOKEN);
 
 const commands = [];
 const cmdPath = join(process.cwd(), 'Discord/commands');
-const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
+const cmdFiles = readdirSync(cmdPath).filter((file) => file.endsWith('.js'));
 
 (async () => {
     try {
@@ -20,8 +20,7 @@ const cmdFiles = readdirSync(cmdPath).filter(file => file.endsWith('.js'));
         // console.log(commands);
         await rest.put(Routes.applicationCommands(process.env.ID), { body: commands });
         console.log('Successfully reloaded GLOBAL Discord application commands.');
-    }
-    catch (error) {
+    } catch (error) {
         console.error(error.message);
     }
 })();

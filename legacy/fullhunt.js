@@ -4,19 +4,18 @@ import get_fullhunt from './get_fullhunt.js';
 export const data = new SlashCommandBuilder()
     .setName('fullhunt')
     .setDescription('Discover domain information with FullHunt API. ( May not work with all domains :/ )')
-    .addStringOption(option => option
-        .setName('query')
-        .setDescription('Select what kind of query to make')
-        .setRequired(true)
-        .addChoices(
-            { name: 'Query domain info', value: 'domain' },
-            { name: 'Query subdomains of a domain', value: 'subdomains' },
-            { name: 'Query host info', value: 'host' },
-        ))
-    .addStringOption(option => option
-        .setName('host')
-        .setDescription('Ex: example.com')
-        .setRequired(true));
+    .addStringOption((option) =>
+        option
+            .setName('query')
+            .setDescription('Select what kind of query to make')
+            .setRequired(true)
+            .addChoices(
+                { name: 'Query domain info', value: 'domain' },
+                { name: 'Query subdomains of a domain', value: 'subdomains' },
+                { name: 'Query host info', value: 'host' },
+            ),
+    )
+    .addStringOption((option) => option.setName('host').setDescription('Ex: example.com').setRequired(true));
 /**
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */

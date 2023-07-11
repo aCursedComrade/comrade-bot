@@ -4,10 +4,7 @@ import { lengthen } from '../../functions/util.js';
 export const data = new SlashCommandBuilder()
     .setName('lengthen')
     .setDescription('Lengthens a shortened URL')
-    .addStringOption(option => option
-        .setName('url')
-        .setDescription('URL to lengthen')
-        .setRequired(true));
+    .addStringOption((option) => option.setName('url').setDescription('URL to lengthen').setRequired(true));
 /**
  * @param {import('discord.js').ChatInputCommandInteraction} interaction
  */
