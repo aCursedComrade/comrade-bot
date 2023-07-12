@@ -13,7 +13,7 @@ const INTERVAL = 1000 * 60 * 30;
  */
 export async function getLatest(url) {
     try {
-        const feeddata = await extract(url, { descriptionMaxLen: 100, useISODateFormat: true, normalization: true });
+        const feeddata = await extract(url, { descriptionMaxLen: 100, useISODateFormat: false });
         return feeddata.entries[0].published;
     } catch {
         return undefined;
@@ -36,7 +36,7 @@ async function postEvents(record) {
     // grab new FeedData
     const result = await extract(
         record.rss_source,
-        { descriptionMaxLen: 200, useISODateFormat: true, normalization: true },
+        { descriptionMaxLen: 200, useISODateFormat: false },
         {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0',
@@ -95,7 +95,7 @@ async function postEvents(record) {
                     console.error(`Feed Parser (post): ${error.message}`);
                 });
 
-            await timeout(1000 * 3);
+            await timeout(1000 * 1);
         }
 
         // if we got back any new FeedData, update the last_update field
