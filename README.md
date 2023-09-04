@@ -7,8 +7,7 @@
 - `userinfo` : Provide information about the given guild user 
 - `guildinfo` : Provide information about the current guild 
 - `meme` : Hot meme from r/dankmemes
-- `lengthen` : Lengthen a shortened link 
-- ~~`fullhunt` : Use the FullHunt API~~ ([Legacy](legacy/fullhunt.js))
+- `lengthen` : Lengthen a shortened link
 - `rss (list,create,delete)` : Set up and manage to post on RSS feed events 
 - `UwUify` : Oh god why did I make this 
 - `dadjoke` : Top tier dad joke 
