@@ -17,8 +17,8 @@ async function init() {
         if ('data' in command && 'handler' in command) {
             commandset.set(command.data.name, command);
         } else {
-            console.log(
-                `[WARNING] The command at ${join(cmdPath, file)} is missing a required "data" or "handler" property.`,
+            console.error(
+                `The command at ${join(cmdPath, file)} is missing a required "data" or "handler" property.`,
             );
         }
     }
@@ -47,13 +47,15 @@ client.on('interactionCreate', async (interaction) => {
                 await interaction.reply({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
             }
         }
-    } else {
-        return;
     }
 });
 
+client.on('error', async (error) => {
+    console.error(`Client error: ${error.message}`);
+});
+
 client.on('ready', () => {
-    console.log(`Discord: Logged in as ${client.user.tag}`);
+    console.log(`Init: Logged in as ${client.user.tag}`);
 });
 
 export default init;

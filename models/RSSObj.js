@@ -5,6 +5,8 @@ const RSSObjSchema = new Schema({
     channel_id: { type: String, required: true },
     rss_source: { type: String, required: true },
     last_update: { type: Date, required: true },
+    webhookId: { type: String, required: false },
+    webhookToken: { type: String, required: false },
 });
 
 const RSSObj = model('RSSObj', RSSObjSchema);
