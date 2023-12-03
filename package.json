@@ -7,8 +7,8 @@
     },
     "private": "true",
     "scripts": {
-        "start": "node ./main.js",
-        "build": "node ./register.js",
+        "start": "node main.js",
+        "build": "node register.js",
         "lint": "prettier . --write"
     },
     "keywords": [],
@@ -19,13 +19,16 @@
         "axios": "^1.5.1",
         "discord.js": "^14.13.0",
         "luxon": "^3.4.3",
-        "mongoose": "^7.5.3",
+        "mongoose": "^8.0.2",
         "uwuifier": "^4.0.5"
     },
     "devDependencies": {
         "dotenv": "^16.3.1",
         "eslint": "^8.50.0",
         "prettier": "^3.0.3"
+    },
+    "overrides": {
+        "@vladfrangu/async_event_emitter": "2.2.2"
     },
     "prettier": {
         "printWidth": 120,
