@@ -1,6 +1,7 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ChannelType, WebhookClient } from 'discord.js';
 import RSSObj from '../../models/RSSObj.js';
 import { getLatest } from '../../submodules/feedReader.js';
+import client from '../client.js';
 
 export const data = new SlashCommandBuilder()
     .setName('rss')
@@ -11,7 +12,7 @@ export const data = new SlashCommandBuilder()
             .setName('create')
             .setDescription('Set up a RSS feed (RSS/Atom/JSON).')
             .addChannelOption((option) =>
-                option.setName('channel').setDescription('Select the channel to post events.').setRequired(true),
+                option.setName('channel').setDescription('Select the channel to post events.').setRequired(true).addChannelTypes(ChannelType.GuildText),
             )
             .addStringOption((option) =>
                 option.setName('url').setDescription('URL of the rss feed.').setRequired(true),
@@ -33,23 +34,39 @@ export const data = new SlashCommandBuilder()
 export async function handler(interaction) {
     const user = await interaction.guild.members.fetch(interaction.user.id);
     if (interaction.options.getSubcommand() === 'create') {
-        // create rss handler
         if (user.permissions.has('ManageWebhooks')) {
             await interaction.deferReply();
-            const channel = interaction.options.getChannel('channel').id;
+            const channel = interaction.options.getChannel('channel');
             const feed_url = interaction.options.getString('url').toString();
+            const fetch_channel = await client.channels.fetch(channel.id);
+
             try {
                 const last_entry = await getLatest(feed_url);
-                if (last_entry != undefined) {
+                if (last_entry != undefined && fetch_channel.type == ChannelType.GuildText) {
+                    const webhook = { id: '', token: '' };
+                    await RSSObj.findOne({ channel_id: fetch_channel.id }).then(async (record) => {
+                        if (record) {
+                            webhook.id = record.webhookId;
+                            webhook.token = record.webhookToken;
+                        } else {
+                            const new_hook = await fetch_channel.createWebhook({ name: client.user.username, avatar: client.user.avatar });
+                            webhook.id = new_hook.id;
+                            webhook.token = new_hook.token;
+                        }
+                    });
+
                     const rss_record = new RSSObj({
                         guild_id: interaction.guild.id,
-                        channel_id: channel,
+                        channel_id: channel.id,
                         rss_source: feed_url,
                         last_update: last_entry,
+                        webhookId: webhook.id,
+                        webhookToken: webhook.token,
                     });
                     rss_record.save();
+
                     await interaction.editReply(
-                        `Feed events from \`${feed_url}\` will be posted in <#${channel}> from now on. Make sure that I have permission to send messages in the specified channel.`,
+                        `Feed events from \`${feed_url}\` will be posted in <#${channel.id}> from now on.`,
                     );
                 } else {
                     await interaction.editReply(
@@ -66,15 +83,23 @@ export async function handler(interaction) {
                 ephemeral: true,
             });
         }
-    } else if (interaction.options.getSubcommand() === 'delete') {
-        // delete rss handler
+    }
+
+    if (interaction.options.getSubcommand() === 'delete') {
         if (user.permissions.has('ManageWebhooks')) {
             await interaction.deferReply();
             const rssId = interaction.options.getString('rss-id');
 
             RSSObj.findByIdAndDelete(rssId)
                 .then(async (callback) => {
-                    await interaction.editReply(`Removed \`${callback.rss_source}\` from <#${callback.channel_id}>.`);
+                    RSSObj.countDocuments({ channel_id: callback.value.channel_id }).then((count) => {
+                        if (count == 0) {
+                            const webhook = new WebhookClient({ id: callback.value.id, token: callback.value.webhookToken });
+                            webhook.delete();
+                        }
+                    });
+
+                    await interaction.editReply(`Removed \`${callback.value.rss_source}\` from <#${callback.value.channel_id}>.`);
                 })
                 .catch(async (error) => {
                     console.error(error.message);
@@ -86,8 +111,9 @@ export async function handler(interaction) {
                 ephemeral: true,
             });
         }
-    } else if (interaction.options.getSubcommand() === 'list') {
-        // list rss handler
+    }
+
+    if (interaction.options.getSubcommand() === 'list') {
         await interaction.deferReply();
         RSSObj.find({ guild_id: interaction.guild.id })
             .then(async (callback) => {
@@ -114,8 +140,6 @@ export async function handler(interaction) {
                     })
                     .setFields(recordFields);
                 await interaction.editReply({
-                    content:
-                        '**NOTE:** Make sure that I have permission to send messages in each specified channel, otherwise you will not see any feed data.',
                     embeds: [embed.data],
                 });
             })

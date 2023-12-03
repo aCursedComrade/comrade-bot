@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { randomObj } from './util.js';
 
 /**
  * @returns {Promise<Object|undefined>} Meme URL
@@ -14,10 +13,8 @@ export async function get_reddit() {
                 limit: 40,
             },
             headers: {
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0 Bot',
+                'User-Agent': 'Comrade-Bot https://github.com/aCursedComrade/Comrade-Bot',
                 Accept: 'application/json',
-                'Upgrade-Insecure-Requests': '1',
-                Referer: 'https://www.google.com',
             },
         })
         .then((res) => {
@@ -28,7 +25,7 @@ export async function get_reddit() {
                     }
                 })
                 .filter((post) => !!post);
-            return posts[randomObj(posts)];
+            return posts[Math.floor(Math.random() ^ posts.length)];
         })
         .catch((e) => {
             console.error(e.message);

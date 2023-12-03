@@ -5,25 +5,18 @@ import axios from 'axios';
  * @returns {Promise<String>} URL
  */
 export async function lengthen(url) {
-    let out = '';
     try {
         const response = await axios.head(url);
-        out = response.request.res.responseUrl;
+        return response.request.res.responseUrl;
     } catch (error) {
-        out = 'That was an invalid URL or a server-side error, please try again.';
+        return 'That was an invalid URL or a server-side error, please try again.';
     }
-
-    return out;
-}
-
-export function randomObj(object) {
-    return Math.floor(Math.random() * object.length);
 }
 
 /**
  * @param {number} ms
  * @returns {Promise<void>}
  */
-export function timeout(ms) {
+export function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-async function init_mongoDB() {
+async function mongo() {
     try {
         const URL = process.env.DB_URL.toString();
         mongoose.set('strictQuery', false);
@@ -14,8 +14,8 @@ async function init_mongoDB() {
         // db.on('connection', console.log.bind(console, 'MongoDB log:'));
         db.on('error', console.error.bind(console, 'MongoDB error:'));
     } catch (error) {
-        console.error('MongoDB: ' + error.message);
+        console.error(`MongoDB init: ${error.message}`);
     }
 }
 
-export default init_mongoDB;
+export default mongo;
