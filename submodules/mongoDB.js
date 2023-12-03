@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import 'dotenv/config';
 
 async function init_mongoDB() {
     try {

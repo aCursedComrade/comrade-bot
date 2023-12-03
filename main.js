@@ -1,4 +1,4 @@
-// import server from './submodules/server.js';
+import 'dotenv/config';
 import init_mongoDB from './submodules/mongoDB.js';
 import feedReader from './submodules/feedReader.js';
 import init from './Discord/init.js';
