@@ -11,5 +11,4 @@ export async function handler(interaction) {
     const uwu = new Uwuifier();
     const sacred_text = uwu.uwuifySentence(interaction.targetMessage.content);
     await interaction.editReply({ content: sacred_text });
-    // console.log(`/${data.name} command done`);
 }

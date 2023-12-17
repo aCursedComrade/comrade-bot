@@ -12,9 +12,9 @@ async function mongo() {
         });
         const db = mongoose.connection;
         // db.on('connection', console.log.bind(console, 'MongoDB log:'));
-        db.on('error', console.error.bind(console, 'MongoDB error:'));
+        db.on('error', console.error.bind(console, 'MongoDB error: '));
     } catch (error) {
-        console.error(`MongoDB init: ${error.message}`);
+        console.error(`MongoDB: ${error.message}`);
     }
 }
 

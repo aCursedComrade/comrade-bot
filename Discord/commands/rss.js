@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder, ChannelType, WebhookClient } from 'discord.js';
-import RSSObj from '../../models/RSSObj.js';
+import RSSEntry from '../../models/RSSObj.js';
 import { getLatest } from '../../submodules/feedReader.js';
 import client from '../client.js';
 
@@ -44,7 +44,8 @@ export async function handler(interaction) {
                 const last_entry = await getLatest(feed_url);
                 if (last_entry != undefined && fetch_channel.type == ChannelType.GuildText) {
                     const webhook = { id: '', token: '' };
-                    await RSSObj.findOne({ channel_id: fetch_channel.id }).then(async (record) => {
+
+                    await RSSEntry.findOne({ channel_id: fetch_channel.id }).then(async (record) => {
                         if (record) {
                             webhook.id = record.webhookId;
                             webhook.token = record.webhookToken;
@@ -55,7 +56,7 @@ export async function handler(interaction) {
                         }
                     });
 
-                    const rss_record = new RSSObj({
+                    const rss_record = new RSSEntry({
                         guild_id: interaction.guild.id,
                         channel_id: channel.id,
                         rss_source: feed_url,
@@ -90,21 +91,22 @@ export async function handler(interaction) {
             await interaction.deferReply();
             const rssId = interaction.options.getString('rss-id');
 
-            RSSObj.findByIdAndDelete(rssId)
-                .then(async (callback) => {
-                    RSSObj.countDocuments({ channel_id: callback.value.channel_id }).then((count) => {
+            RSSEntry.findByIdAndDelete(rssId, { new: true })
+                .then(async (entry) => {
+                    RSSEntry.countDocuments({ channel_id: entry.channel_id }).then((count) => {
                         if (count == 0) {
-                            const webhook = new WebhookClient({ id: callback.value.id, token: callback.value.webhookToken });
+                            const webhook = new WebhookClient({ id: entry.webhookId, token: entry.webhookToken });
                             webhook.delete();
                         }
                     });
 
-                    await interaction.editReply(`Removed \`${callback.value.rss_source}\` from <#${callback.value.channel_id}>.`);
+                    await interaction.editReply(`Removed \`${entry.rss_source}\` from <#${entry.channel_id}>.`);
                 })
                 .catch(async (error) => {
                     console.error(error.message);
                     await interaction.editReply('An error occured');
                 });
+
         } else {
             await interaction.reply({
                 content: 'Sorry, only users with `Manage Webhooks` permission can do this!.',
@@ -115,7 +117,8 @@ export async function handler(interaction) {
 
     if (interaction.options.getSubcommand() === 'list') {
         await interaction.deferReply();
-        RSSObj.find({ guild_id: interaction.guild.id })
+
+        RSSEntry.find({ guild_id: interaction.guild.id })
             .then(async (callback) => {
                 const recordFields = [];
                 if (callback.length > 0) {
@@ -133,7 +136,7 @@ export async function handler(interaction) {
                 }
                 const embed = new EmbedBuilder()
                     .setTitle('RSS Feeds')
-                    .setDescription('Configured RSS feeds for this guild. All sources are looked up every 30 minutes.')
+                    .setDescription('Configured RSS feeds for this guild. Events are posted via channel webhooks managed by the bot. Runs every 30 mins')
                     .setFooter({
                         text: `${interaction.guild.name}`,
                         iconURL: interaction.guild.iconURL(),

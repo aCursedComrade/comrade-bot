@@ -13,5 +13,4 @@ export async function handler(interaction) {
     const url = interaction.options.getString('url');
     const head = await lengthen(url);
     await interaction.editReply({ content: head });
-    // console.log(`/${data.name} command done`);
 }
