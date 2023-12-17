@@ -1,10 +1,8 @@
 import { extract } from '@extractus/feed-extractor';
-import { EmbedBuilder, ChannelType } from 'discord.js';
+import { EmbedBuilder, WebhookClient } from 'discord.js';
 import client from '../Discord/client.js';
-import RSSObj from '../models/RSSObj.js';
-import { timeout } from '../functions/util.js';
-
-const INTERVAL = 1000 * 60 * 30;
+import RSSEntry from '../models/RSSObj.js';
+import { sleep } from '../functions/util.js';
 
 // Validate and return the latest entry at initial setup
 /**
@@ -13,9 +11,10 @@ const INTERVAL = 1000 * 60 * 30;
  */
 export async function getLatest(url) {
     try {
-        const feeddata = await extract(url, { descriptionMaxLen: 100, useISODateFormat: false });
-        return feeddata.entries[0].published;
-    } catch {
+        const feeddata = await extract(url, { useISODateFormat: false });
+        return feeddata.entries[3].published;
+    } catch (error) {
+        console.error(`Feed lookup: ${error.message}`);
         return undefined;
     }
 }
@@ -39,10 +38,8 @@ async function postEvents(record) {
         { descriptionMaxLen: 200, useISODateFormat: false },
         {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0',
+                'User-Agent': 'Comrade-Bot https://github.com/aCursedComrade/Comrade-Bot',
                 Accept: 'text/html,application/xhtml+xml,application/xml',
-                'Upgrade-Insecure-Requests': '1',
-                Referer: 'https://www.google.com',
             },
         },
     ).catch((errror) => {
@@ -58,48 +55,37 @@ async function postEvents(record) {
              * @returns {import('@extractus/feed-extractor').FeedEntry[]}
              */
             function (filtered, post) {
-                post.published = new Date(post.published);
-                record.last_update = new Date(record.last_update);
-
-                if (!record.last_update) {
-                    const offset = new Date(Date.now());
-                    offset.setUTCHours(offset.getUTCHours() - 6);
-
-                    post.published > offset ? filtered.push(post) : null;
-                } else {
-                    post.published > record.last_update ? filtered.push(post) : null;
-                }
+                Date.parse(post.published.toString()) > record.last_update.valueOf() ? filtered.push(post) : null;
 
                 return filtered;
             },
             [],
         );
 
+        const webhook = new WebhookClient({ id: record.webhookId, token: record.webhookToken });
+
         // post new entries
         for (const entry of newData.reverse()) {
-            const news = new EmbedBuilder()
+            const embed = new EmbedBuilder()
                 .setAuthor({ name: result.title, url: result.link || null })
                 .setTitle(entry.title)
                 .setURL(entry.link)
                 .setDescription(entry.description || 'No description')
-                .setTimestamp(entry.published);
+                .setTimestamp(Date.parse(entry.published.toString()));
 
-            client.channels
-                .fetch(record.channel_id, { cache: true })
-                .then((channel) => {
-                    if (channel.type == ChannelType.GuildText) {
-                        channel.send({ embeds: [news.data] });
-                    }
-                })
-                .catch((error) => {
-                    console.error(`Feed Parser (post): ${error.message}`);
-                });
+            webhook.send({
+                username: client.user.username,
+                avatarURL: client.user.avatarURL({ size: 256 }),
+                embeds: [embed],
+            }).catch((error) => {
+                console.error(`Feed Parser: (webhook): ${error.message}`);
+            });
 
-            await timeout(1000 * 1);
+            await sleep(1000);
         }
 
-        // if we got back any new FeedData, update the last_update field
-        RSSObj.findByIdAndUpdate(record._id, { last_update: result.entries[0].published }).catch((error) => {
+        // update the last_update field with the newest entry
+        RSSEntry.findByIdAndUpdate(record._id, { last_update: result.entries[0].published }).catch((error) => {
             console.error(`Feed Parser (update): ${error.message}`);
         });
     }
@@ -107,7 +93,7 @@ async function postEvents(record) {
 
 async function feedReader() {
     setInterval(() => {
-        RSSObj.find()
+        RSSEntry.find()
             .then((feed_list) => {
                 for (const record of feed_list) {
                     postEvents(record.toJSON());
@@ -116,7 +102,7 @@ async function feedReader() {
             .catch((error) => {
                 console.error(`Feed Parser (db_read): ${error.message}`);
             });
-    }, INTERVAL);
+    }, Number.parseInt(process.env.INTERVAL, 10));
 }
 
 export default feedReader;

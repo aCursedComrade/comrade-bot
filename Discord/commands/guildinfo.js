@@ -62,6 +62,5 @@ export async function handler(interaction) {
             .setFooter({ text: `Guild ID: ${guild.id}` })
             .setTimestamp();
         interaction.reply({ embeds: [embed.data], ephemeral: true });
-        // console.log(`/${data.name} command done`);
     });
 }

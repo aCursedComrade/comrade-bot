@@ -1,8 +1,7 @@
 # Comrade Bot
 - A simple Discord bot written by me as a hobby project.
-- [Click here](https://discord.com/api/oauth2/authorize?client_id=963799147947909141&permissions=2684406784&scope=bot%20applications.commands) to invite the bot to your Discord server.
 
-## Commands
+### Commands
 - `ping` : The game of ping-pong 
 - `userinfo` : Provide information about the given guild user 
 - `guildinfo` : Provide information about the current guild 

@@ -19,5 +19,4 @@ export async function handler(interaction) {
     } else {
         await interaction.editReply('Issue reaching to API. Try again later.');
     }
-    // console.log(`/${data.name} command done`);
 }

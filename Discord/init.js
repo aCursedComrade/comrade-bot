@@ -3,7 +3,6 @@ import { readdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
 import client from './client.js';
-import 'dotenv/config';
 
 const commandset = new Collection();
 

@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const RSSObjSchema = new Schema({
+const RSSEntrySchema = new Schema({
     guild_id: { type: String, required: true },
     channel_id: { type: String, required: true },
     rss_source: { type: String, required: true },
@@ -9,5 +9,5 @@ const RSSObjSchema = new Schema({
     webhookToken: { type: String, required: false },
 });
 
-const RSSObj = model('RSSObj', RSSObjSchema);
-export default RSSObj;
+const RSSEntry = model('RSSEntry', RSSEntrySchema);
+export default RSSEntry;

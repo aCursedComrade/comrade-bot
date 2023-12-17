@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
-import 'dotenv/config';
 
-async function init_mongoDB() {
+async function mongo() {
     try {
         const URL = process.env.DB_URL.toString();
         mongoose.set('strictQuery', false);
@@ -13,10 +12,10 @@ async function init_mongoDB() {
         });
         const db = mongoose.connection;
         // db.on('connection', console.log.bind(console, 'MongoDB log:'));
-        db.on('error', console.error.bind(console, 'MongoDB error:'));
+        db.on('error', console.error.bind(console, 'MongoDB error: '));
     } catch (error) {
-        console.error('MongoDB: ' + error.message);
+        console.error(`MongoDB: ${error.message}`);
     }
 }
 
-export default init_mongoDB;
+export default mongo;

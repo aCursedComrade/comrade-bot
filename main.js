@@ -1,14 +1,10 @@
-// import server from './submodules/server.js';
-import init_mongoDB from './submodules/mongoDB.js';
+import mongo from './submodules/mongoDB.js';
 import feedReader from './submodules/feedReader.js';
 import init from './Discord/init.js';
 
-// Invoke all application modules
 (async () => {
-    // sub-modules
-    // server();
-    init_mongoDB();
+    if (!process.env.NODE_ENV) { await import('dotenv/config'); }
+    mongo();
     feedReader();
-
     init();
 })();

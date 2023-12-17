@@ -49,6 +49,5 @@ export async function handler(interaction) {
                 .setFooter({ text: `User ID: ${member.id}` })
                 .setTimestamp();
             interaction.reply({ embeds: [embed.data], ephemeral: true });
-            // console.log(`/${data.name} command done`);
         });
 }
