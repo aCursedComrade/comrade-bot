@@ -26,9 +26,6 @@
         "eslint": "^8.50.0",
         "prettier": "^3.0.3"
     },
-    "overrides": {
-        "@vladfrangu/async_event_emitter": "2.2.2"
-    },
     "prettier": {
         "printWidth": 120,
         "tabWidth": 4,

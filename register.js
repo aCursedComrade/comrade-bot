@@ -21,6 +21,6 @@ const cmdFiles = readdirSync(cmdPath).filter((file) => file.endsWith('.js'));
         await rest.put(Routes.applicationCommands(process.env.ID), { body: commands });
         console.log('Successfully reloaded GLOBAL Discord application commands.');
     } catch (error) {
-        console.error(error.message);
+        console.error(error);
     }
 })();
