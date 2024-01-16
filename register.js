@@ -3,9 +3,8 @@ import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import 'dotenv/config';
 
-const rest = new REST().setToken(process.env.TOKEN);
-
 const commands = [];
+const rest = new REST().setToken(process.env.TOKEN);
 const cmdPath = join(process.cwd(), 'Discord/commands');
 const cmdFiles = readdirSync(cmdPath).filter((file) => file.endsWith('.js'));
 
