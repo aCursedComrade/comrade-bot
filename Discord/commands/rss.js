@@ -75,7 +75,7 @@ export async function handler(interaction) {
                     );
                 }
             } catch (error) {
-                console.error(error.message);
+                console.error(error);
                 await interaction.editReply('An error occured');
             }
         } else {
@@ -103,7 +103,7 @@ export async function handler(interaction) {
                     await interaction.editReply(`Removed \`${entry.rss_source}\` from <#${entry.channel_id}>.`);
                 })
                 .catch(async (error) => {
-                    console.error(error.message);
+                    console.error(error);
                     await interaction.editReply('An error occured');
                 });
 
@@ -147,7 +147,7 @@ export async function handler(interaction) {
                 });
             })
             .catch(async (error) => {
-                console.error(error.message);
+                console.error(error);
                 await interaction.editReply('An error occured');
             });
     }

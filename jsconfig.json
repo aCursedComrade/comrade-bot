@@ -6,5 +6,15 @@
         "target": "ES2022",
         "moduleResolution": "node"
     },
-    "exclude": ["node_modules/*"]
+    "exclude": [
+        "node_modules/"
+    ],
+    "include": [
+        "main.js",
+        "register.js",
+        "Discord/",
+        "functions/",
+        "models/",
+        "submodules/"
+    ]
 }

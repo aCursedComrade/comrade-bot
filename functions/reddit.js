@@ -4,17 +4,19 @@ import axios from 'axios';
  * @returns {Promise<Object|undefined>} Meme URL
  */
 export async function get_reddit() {
-    // const subs = ['memes', 'meme', 'dankmemes', 'Animemes', 'Funnymemes'];
     return await axios
-        .get('https://www.reddit.com/r/dankmemes/hot.json', {
+        .get('https://www.reddit.com/r/memes/hot.json', {
             params: {
                 g: 'GLOBAL',
                 show: 'all',
-                limit: 40,
+                limit: 48,
             },
             headers: {
-                'User-Agent': 'Comrade-Bot https://github.com/aCursedComrade/Comrade-Bot',
-                Accept: 'application/json',
+                'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/120.0',
+                Accept: 'text/html,application/xhtml+xml,application/xml,application/json',
+                'Accept-Language': 'en-US,en',
+                'Accept-Encoding': 'gzip,deflate,br',
+                'Upgrade-Insecure-Requests': 1,
             },
         })
         .then((res) => {
@@ -27,8 +29,8 @@ export async function get_reddit() {
                 .filter((post) => !!post);
             return posts[Math.floor(Math.random() ^ posts.length)];
         })
-        .catch((e) => {
-            console.error(e.message);
+        .catch((error) => {
+            console.error(error.message);
             return undefined;
         });
 }
