@@ -4,8 +4,7 @@
     "private": "true",
     "scripts": {
         "start": "node main.js",
-        "build": "node register.js",
-        "lint": "prettier . --write"
+        "build": "node register.js"
     },
     "keywords": [],
     "author": "",
