@@ -3,8 +3,9 @@ import feedReader from './submodules/feedReader.js';
 import init from './Discord/init.js';
 import 'dotenv/config';
 
-(async () => {
-    mongo();
-    feedReader();
-    init();
-})();
+// submodules
+mongo();
+feedReader();
+
+// entry point
+await init();

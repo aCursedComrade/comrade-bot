@@ -1,4 +1,4 @@
-import { Collection, codeBlock, InteractionType } from 'discord.js';
+import { Collection, InteractionType } from 'discord.js';
 import { readdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
@@ -16,17 +16,14 @@ async function init() {
         if ('data' in command && 'handler' in command) {
             commandset.set(command.data.name, command);
         } else {
-            console.error(
-                `The command at ${join(cmdPath, file)} is missing a required "data" or "handler" property.`,
-            );
+            console.error(`The command at ${join(cmdPath, file)} is missing a required "data" or "handler" property.`);
         }
     }
 
-    // start
     client.login(process.env.TOKEN);
 }
 
-// Event Handlers
+// event Handlers
 client.on('interactionCreate', async (interaction) => {
     if (interaction.type == InteractionType.ApplicationCommand) {
         const command = commandset.get(interaction.commandName);
@@ -41,9 +38,9 @@ client.on('interactionCreate', async (interaction) => {
         } catch (error) {
             console.error(`${interaction.commandName} failed: ${error.message}`);
             if (interaction.deferred || interaction.replied) {
-                await interaction.followUp({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
+                await interaction.followUp({ content: 'Sorry! Bot ran into a problem :pensive:' });
             } else {
-                await interaction.reply({ content: `Bot ran into a problem :pensive: ${codeBlock(error.message)}` });
+                await interaction.reply({ content: 'Sorry! Bot ran into a problem :pensive:' });
             }
         }
     }

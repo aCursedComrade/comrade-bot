@@ -11,8 +11,7 @@ async function mongo() {
             writeConcern: { w: 'majority' },
         });
         const db = mongoose.connection;
-        // db.on('connection', console.log.bind(console, 'MongoDB log:'));
-        db.on('error', console.error.bind(console, 'MongoDB error: '));
+        db.on('error', (err) => console.error('Mongo error:', err));
     } catch (error) {
         console.error(`MongoDB: ${error.message}`);
     }
