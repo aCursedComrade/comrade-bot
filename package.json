@@ -7,7 +7,7 @@
         "build": "node register.js"
     },
     "keywords": [],
-    "author": "",
+    "author": "aCursedComrade",
     "license": "ISC",
     "dependencies": {
         "@extractus/feed-extractor": "^7.0.8",
