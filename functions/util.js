@@ -9,6 +9,7 @@ export async function lengthen(url) {
         const response = await axios.head(url);
         return response.request.res.responseUrl;
     } catch (error) {
+        console.error(`lengthen: ${error}`);
         return 'That was an invalid URL or a server-side error, please try again.';
     }
 }
