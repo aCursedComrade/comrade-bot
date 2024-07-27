@@ -10,8 +10,6 @@ async function mongo() {
             retryWrites: true,
             writeConcern: { w: 'majority' },
         });
-        const db = mongoose.connection;
-        db.on('error', (err) => console.error('Mongo error:', err));
     } catch (error) {
         console.error(`MongoDB: ${error.message}`);
     }

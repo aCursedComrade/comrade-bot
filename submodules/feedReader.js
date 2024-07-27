@@ -7,7 +7,7 @@ import { sleep } from '../functions/util.js';
 // Validate and return the latest entry at initial setup
 /**
  * @param {String} url
- * @returns {Promise<Date | undefined>}
+ * @returns {Promise<String | undefined>}
  */
 export async function getLatest(url) {
     try {
@@ -73,13 +73,15 @@ async function postEvents(record) {
                 .setDescription(entry.description || 'No description')
                 .setTimestamp(Date.parse(entry.published.toString()));
 
-            webhook.send({
-                username: client.user.username,
-                avatarURL: client.user.avatarURL({ size: 256 }),
-                embeds: [embed],
-            }).catch((error) => {
-                console.error(`Feed Parser: (webhook): ${error.message}`);
-            });
+            webhook
+                .send({
+                    username: client.user.username,
+                    avatarURL: client.user.avatarURL({ size: 256 }),
+                    embeds: [embed],
+                })
+                .catch((error) => {
+                    console.error(`Feed Parser: (webhook): ${error.message}`);
+                });
 
             await sleep(1000);
         }
@@ -92,17 +94,20 @@ async function postEvents(record) {
 }
 
 async function feedReader() {
-    setInterval(() => {
-        RSSEntry.find()
-            .then((feed_list) => {
-                for (const record of feed_list) {
-                    postEvents(record.toJSON());
-                }
-            })
-            .catch((error) => {
-                console.error(`Feed Parser (db_read): ${error.message}`);
-            });
-    }, Number.parseInt(process.env.INTERVAL, 10));
+    setInterval(
+        () => {
+            RSSEntry.find()
+                .then((feed_list) => {
+                    for (const record of feed_list) {
+                        postEvents(record.toJSON());
+                    }
+                })
+                .catch((error) => {
+                    console.error(`Feed Parser (db_read): ${error.message}`);
+                });
+        },
+        Number.parseInt(process.env.INTERVAL, 10),
+    );
 }
 
 export default feedReader;
