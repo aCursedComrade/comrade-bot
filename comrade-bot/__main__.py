@@ -1,3 +1,4 @@
+import asyncio
 import os
 import logging
 import client
@@ -14,5 +15,6 @@ if log_level:
     logging.basicConfig(level=log_val, force=True)
 
 # start the client
-bot = client.ComradeBot()
-bot.run()
+if __name__ == "__main__":
+    bot = client.ComradeBot()
+    bot.begin()

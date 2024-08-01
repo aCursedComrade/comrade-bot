@@ -2,6 +2,7 @@ import os
 import logging
 import requests
 import discord
+from client import ComradeBot
 from discord.ext import commands
 from discord import app_commands
 
@@ -11,7 +12,7 @@ log = logging.getLogger(__name__)
 class General(commands.Cog):
     """Contains a set of generic commands"""
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: ComradeBot):
         self.bot = bot
 
         # add the UwUify message context menu command
@@ -112,5 +113,5 @@ class General(commands.Cog):
             await itr.followup.send(content="Faiwled to uwuify twe twext :(")
 
 
-async def setup(bot: commands.Bot):
+async def setup(bot: ComradeBot):
     await bot.add_cog(General(bot))

@@ -13,7 +13,7 @@ class ComradeBot(commands.Bot):
     """The class representing the client/bot. Comrade bot :)"""
 
     init_time: datetime.datetime = datetime.datetime.now()
-    cmd_dir: str = "\\".join([os.getcwd(), "comrade-bot", "commands"])
+    cmd_dir: str = "/".join([os.getcwd(), "comrade-bot", "commands"])
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any):
         intents = discord.Intents.none()
@@ -27,14 +27,30 @@ class ComradeBot(commands.Bot):
         )
         self.synced = False
 
-    def run(self, *args: typing.Any, **kwargs: typing.Any):
+    def begin(self, *args: typing.Any, **kwargs: typing.Any):
         """Starts the bot"""
         try:
-            super().run(str(os.getenv("TOKEN")), log_handler=None, *args, **kwargs)
+            # TODO figure out the best way to restart the bot
+            # like after syncing the command tree
+
+            super().run(
+                token=str(os.getenv("TOKEN")),
+                reconnect=True,
+                log_handler=None,
+                *args,
+                **kwargs,
+            )
+        except discord.ConnectionClosed:
+            log.error("Connection with the gateway was closed unexpectedly")
+            exit(1)
+        except discord.GatewayNotFound:
+            log.error("Discord API gateway is unreachable")
+            exit(1)
         except discord.LoginFailure:
             log.error("Failed to login as client")
+            exit(1)
         except KeyboardInterrupt:
-            log.warn("Exiting")
+            log.warn("Exiting...")
             exit()
 
     async def load_cogs(self):
@@ -46,6 +62,8 @@ class ComradeBot(commands.Bot):
                     log.info(f"Loaded {file[:-3]}")
                 except commands.ExtensionError:
                     log.error(f"Failed to load {file[:-3]}\n{traceback.format_exc()}")
+
+        log.warn("All cogs loaded")
 
     async def setup_hook(self):
         await self.load_cogs()
@@ -64,7 +82,6 @@ class ComradeBot(commands.Bot):
 
     async def close(self):
         await super().close()
-        log.warn("Connection with the gateway was closed")
 
     @property
     def user(self) -> discord.ClientUser:
