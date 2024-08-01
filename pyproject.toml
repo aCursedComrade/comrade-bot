@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "comrade-bot"
+version = "1.0.0"
+description = "Simple Discord bot"
+authors = ["Loshana Aloka <acursed_comrade@proton.me>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+discord-py = "2.4.0"
+requests = "2.32.3"
+
+[tool.poetry.group.dev.dependencies]
+python-dotenv = "1.0.1"
+
+[tool.pyright]
+venvPath = "/"
+venv = ".venv/"
+include = ["comrade-bot/"]
+exclude = ["**/__pycache__/"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
