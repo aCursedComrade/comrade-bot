@@ -4,7 +4,9 @@ import traceback
 import datetime
 import typing
 import discord
+import aiohttp
 from discord.ext import commands
+from pymongo import MongoClient
 
 log = logging.getLogger(__name__)
 
@@ -12,10 +14,14 @@ log = logging.getLogger(__name__)
 class ComradeBot(commands.Bot):
     """The class representing the client/bot. Comrade bot :)"""
 
+    client: aiohttp.ClientSession
     init_time: datetime.datetime = datetime.datetime.now()
     cmd_dir: str = "/".join([os.getcwd(), "comrade-bot", "commands"])
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any):
+        self.mongo = MongoClient(os.environ["DB_URI"])
+        self.db = self.mongo[os.environ["DB_NAME"]]
+
         intents = discord.Intents.none()
         intents.guilds = True
         intents.guild_messages = True
@@ -30,9 +36,6 @@ class ComradeBot(commands.Bot):
     def begin(self, *args: typing.Any, **kwargs: typing.Any):
         """Starts the bot"""
         try:
-            # TODO figure out the best way to restart the bot
-            # like after syncing the command tree
-
             super().run(
                 token=str(os.getenv("TOKEN")),
                 reconnect=True,
@@ -66,6 +69,7 @@ class ComradeBot(commands.Bot):
         log.warn("All cogs loaded")
 
     async def setup_hook(self):
+        self.client = aiohttp.ClientSession()
         await self.load_cogs()
         # if not self.synced:
         #     await self.tree.sync()
@@ -82,6 +86,7 @@ class ComradeBot(commands.Bot):
 
     async def close(self):
         await super().close()
+        await self.client.close()
 
     @property
     def user(self) -> discord.ClientUser:

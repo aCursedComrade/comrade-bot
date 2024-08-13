@@ -48,9 +48,7 @@ class Dev(commands.Cog):
         log.warn("Commands resynced")
         await ctx.reply("Commands resynced, restarting...")
 
-        # we do .close() for now and let the process manager
-        # restart the process for us
-        await self.bot.close()
+        # await self.bot.close()
 
 
 async def setup(bot: ComradeBot):

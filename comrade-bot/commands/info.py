@@ -42,7 +42,6 @@ class InfoHelper(commands.Cog):
             await itr.response.send_message("Something went wrong, try again later")
 
     @app_commands.command()
-    @app_commands.guild_only()
     @app_commands.describe(user="User to look up information on")
     async def user(self, itr: discord.Interaction, user: discord.Member | None):
         """Looks up information about the current or another user"""
@@ -53,8 +52,8 @@ class InfoHelper(commands.Cog):
             timestamp=datetime.datetime.now(datetime.UTC),
             color=user.color,
         )
-        embed.set_thumbnail(url=user.display_avatar.url)
-        embed.set_footer(text=f"User ID: {user.id}")
+        embed.set_thumbnail(url=user.display_avatar)
+        embed.set_footer(text=f"User ID: {user.id}", icon_url=user.display_avatar)
         embed.add_field(
             name="Registered at", value=f"<t:{int(user.created_at.timestamp())}:D>"
         )
@@ -85,34 +84,30 @@ class InfoHelper(commands.Cog):
     @app_commands.guild_only()
     async def guild(self, itr: discord.Interaction):
         """Looks up information about the current guild"""
-        if itr.guild:
-            guild = itr.guild
-            embed = discord.Embed(
-                title=guild.name,
-                description=guild.description,
-                timestamp=datetime.datetime.now(datetime.UTC),
-                color=guild.owner.color if guild.owner else None,
-            )
-            embed.set_thumbnail(url=guild.icon)
-            embed.set_image(url=guild.banner)
-            embed.set_footer(text=f"Guild ID: {guild.id}")
-            embed.add_field(name="Guild owner", value=f"<@{guild.owner_id}>")
-            embed.add_field(
-                name="Created at", value=f"<t:{int(guild.created_at.timestamp())}:D>"
-            )
-            embed.add_field(name="Member count", value=guild.member_count)
-            embed.add_field(name="Text channels", value=guild.text_channels.__len__())
-            embed.add_field(name="Voice channels", value=guild.voice_channels.__len__())
-            embed.add_field(name="Role count", value=guild.roles.__len__())
-            embed.add_field(name="Emoji count", value=guild.emojis.__len__())
+        if itr.guild is None:
+            return
 
-            await itr.response.send_message(embed=embed, ephemeral=True)
-        else:
-            log.error("Failed to resolve guild information")
-            await itr.response.send_message(
-                content="Failed to resolve guild information, try again later.",
-                ephemeral=True,
-            )
+        guild = itr.guild
+        embed = discord.Embed(
+            title=guild.name,
+            description=guild.description,
+            timestamp=datetime.datetime.now(datetime.UTC),
+            color=guild.owner.color if guild.owner else None,
+        )
+        embed.set_thumbnail(url=guild.icon)
+        embed.set_image(url=guild.banner)
+        embed.set_footer(text=f"Guild ID: {guild.id}", icon_url=guild.icon)
+        embed.add_field(name="Guild owner", value=f"<@{guild.owner_id}>")
+        embed.add_field(
+            name="Created at", value=f"<t:{int(guild.created_at.timestamp())}:D>"
+        )
+        embed.add_field(name="Member count", value=guild.member_count)
+        embed.add_field(name="Text channels", value=guild.text_channels.__len__())
+        embed.add_field(name="Voice channels", value=guild.voice_channels.__len__())
+        embed.add_field(name="Role count", value=guild.roles.__len__())
+        embed.add_field(name="Emoji count", value=guild.emojis.__len__())
+
+        await itr.response.send_message(embed=embed, ephemeral=True)
 
 
 async def setup(bot: ComradeBot):

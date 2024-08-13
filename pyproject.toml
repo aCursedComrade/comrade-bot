@@ -8,11 +8,13 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
-discord-py = "2.4.0"
-requests = "2.32.3"
+feedparser = "6.0.11"
+discord-py = "^2.4.0"
+requests = "^2.32.3"
+pymongo = "4.8.0"
 
 [tool.poetry.group.dev.dependencies]
-python-dotenv = "1.0.1"
+python-dotenv = "^1.0.1"
 
 [tool.pyright]
 venvPath = "/"
