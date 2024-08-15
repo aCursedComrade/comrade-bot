@@ -7,6 +7,7 @@ from feedparser import parse
 from pymongo.collection import Collection
 from .schema import RSSEntry
 from ..client import ComradeBot
+from ..util import remove_html
 
 log = logging.getLogger(__name__)
 
@@ -60,9 +61,9 @@ async def fetcher(bot: ComradeBot):
                     title=item.get("title", "(No title)"),
                     url=item.get("link", None),
                     description=(
-                        item.get("description", "(No description)")
+                        remove_html(item.get("description", "(No description)"))
                         if "description" in item
-                        else item.get("summary", "(No description)")
+                        else remove_html(item.get("summary", "(No description)"))
                     ),
                     timestamp=post_date,
                 )
@@ -82,7 +83,11 @@ async def fetcher(bot: ComradeBot):
             embeds.reverse()
             web_hook = await bot.fetch_webhook(int(record["webhookId"]))
             # send the last 10 in case there are more than 10 embeds
-            await web_hook.send(embeds=embeds[-10:])
+            await web_hook.send(
+                username=bot.user.name,
+                avatar_url=bot.user.display_avatar.url,
+                embeds=embeds[-10:],
+            )
 
             latest_update = datetime.datetime.fromisoformat(
                 time.strftime("%Y-%m-%dT%H:%M:%SZ", source.entries[0].published_parsed)
