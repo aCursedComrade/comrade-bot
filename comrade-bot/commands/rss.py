@@ -99,7 +99,9 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
             except Exception as error:
                 log.error("Error deleting the webhook:", error.__cause__)
 
-        await itr.followup.send(f"Removed `{deleted["rss_source"]}` from <#{deleted["channel_id"]}>")
+        await itr.followup.send(
+            f"Removed `{deleted['rss_source']}` from <#{deleted['channel_id']}>"
+        )
 
     @app_commands.command()
     async def list(self, itr: discord.Interaction):
@@ -161,7 +163,7 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
             for r in records
         ][:25]
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=15)
     async def runner(self):
         await fetcher(self.bot)
 
