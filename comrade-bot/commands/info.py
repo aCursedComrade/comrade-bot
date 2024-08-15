@@ -2,7 +2,7 @@ import logging
 import typing
 import discord
 import datetime
-from client import ComradeBot
+from ..client import ComradeBot
 from discord.ext import commands
 from discord import app_commands
 

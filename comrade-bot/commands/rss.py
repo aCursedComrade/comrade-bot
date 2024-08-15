@@ -1,15 +1,15 @@
-import os
 import time
 import typing
 import logging
 import discord
 import datetime
-import feedparser
-from client import ComradeBot
-from discord.ext import commands
-from discord import Webhook, app_commands
+from feedparser import parse
+from ..client import ComradeBot
+from discord import app_commands
+from discord.ext import commands, tasks
 from pymongo.collection import Collection
-from rss.schema import RSSEntry
+from ..rss.schema import RSSEntry
+from ..rss.core import fetcher
 from bson import ObjectId
 
 log = logging.getLogger(__name__)
@@ -21,6 +21,7 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
 
     def __init__(self, bot: ComradeBot):
         self.bot = bot
+        self.runner.start()
         self.collection: Collection[RSSEntry] = self.bot.db.rssentries
 
     @app_commands.command()
@@ -38,7 +39,7 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
         await itr.response.defer()
         # grab the published time of third from the last entry
         try:
-            feed = feedparser.parse(url, agent=os.environ["USER_AGENT"])
+            feed = parse(url)
             last_update = datetime.datetime.fromisoformat(
                 time.strftime("%Y-%m-%dT%H:%M:%SZ", feed.entries[2].published_parsed)
             )
@@ -159,6 +160,10 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
             app_commands.Choice(name=r["rss_source"], value=str(r["_id"]))  # type: ignore
             for r in records
         ][:25]
+
+    @tasks.loop(minutes=1)
+    async def runner(self):
+        await fetcher(self.bot)
 
 
 async def setup(bot: ComradeBot):

@@ -1,7 +1,6 @@
-import asyncio
 import os
 import logging
-import client
+from .client import ComradeBot
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,5 +15,5 @@ if log_level:
 
 # start the client
 if __name__ == "__main__":
-    bot = client.ComradeBot()
+    bot = ComradeBot()
     bot.begin()

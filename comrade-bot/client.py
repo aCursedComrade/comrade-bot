@@ -5,6 +5,7 @@ import datetime
 import typing
 import discord
 import aiohttp
+import feedparser
 from discord.ext import commands
 from pymongo import MongoClient
 
@@ -61,7 +62,7 @@ class ComradeBot(commands.Bot):
         for file in os.listdir(self.cmd_dir):
             if file.endswith(".py") and not file.startswith("_"):
                 try:
-                    await self.load_extension(f"commands.{file[:-3]}")
+                    await self.load_extension(f"comrade-bot.commands.{file[:-3]}")
                     log.info(f"Loaded {file[:-3]}")
                 except commands.ExtensionError:
                     log.error(f"Failed to load {file[:-3]}\n{traceback.format_exc()}")
@@ -69,6 +70,8 @@ class ComradeBot(commands.Bot):
         log.warn("All cogs loaded")
 
     async def setup_hook(self):
+        feedparser.USER_AGENT = os.getenv("USER_AGENT", "Comrade Bot")
+
         self.client = aiohttp.ClientSession()
         await self.load_cogs()
         # if not self.synced:

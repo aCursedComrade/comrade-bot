@@ -4,7 +4,7 @@ A simple Discord bot written by me as a hobby project.
 
 ```python
 # while in the project directory, run this to start the bot
-python comrade-bot
+python -m comrade-bot
 ```
 
 ### Commands

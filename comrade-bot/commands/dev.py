@@ -1,7 +1,7 @@
 import logging
 import traceback
 import discord
-from client import ComradeBot
+from ..client import ComradeBot
 from discord.ext import commands
 
 log = logging.getLogger(__name__)

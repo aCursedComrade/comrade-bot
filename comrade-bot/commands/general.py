@@ -2,7 +2,7 @@ import os
 import logging
 import requests
 import discord
-from client import ComradeBot
+from ..client import ComradeBot
 from discord.ext import commands
 from discord import app_commands
 
