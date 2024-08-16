@@ -13,19 +13,11 @@ class Dev(commands.Cog):
     def __init__(self, bot: ComradeBot):
         self.bot = bot
 
-    # def is_owner(self, id: int) -> bool:
-    #     if str(id) in os.environ["OWNER"].split(","):
-    #         return True
-    #     return False
-
-    # def cog_check(self, ctx: commands.Context):
-    #     return self.is_owner(ctx.author.id)
-
     async def cog_command_error(self, ctx: commands.Context, error: Exception):
         if isinstance(error, commands.NotOwner):
             await ctx.reply("Nuh uh")
         else:
-            log.error(f"Error in cog:\n{traceback.format_exc()}")
+            log.error(f"Error in cog: %s", error)
             embed = discord.Embed()
             embed.__setattr__("title", "Error (Dev module)")
             embed.__setattr__(
@@ -46,9 +38,7 @@ class Dev(commands.Cog):
         """Syncs all commands to the global space"""
         await self.bot.tree.sync()
         log.warn("Commands resynced")
-        await ctx.reply("Commands resynced, restarting...")
-
-        # await self.bot.close()
+        await ctx.reply("Commands resynced")
 
 
 async def setup(bot: ComradeBot):

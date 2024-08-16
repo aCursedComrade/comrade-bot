@@ -5,7 +5,7 @@ import discord
 import datetime
 from feedparser import parse
 from ..client import ComradeBot
-from discord import app_commands
+from discord import Forbidden, app_commands
 from discord.ext import commands, tasks
 from pymongo.collection import Collection
 from ..rss.schema import RSSEntry
@@ -23,6 +23,22 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
         self.bot = bot
         self.runner.start()
         self.collection: Collection[RSSEntry] = self.bot.db.rssentries
+
+    async def cog_app_command_error(
+        self,
+        interaction: discord.Interaction,
+        error: app_commands.AppCommandError | Exception,
+    ):
+        if isinstance(error, app_commands.MissingPermissions):
+            message = "You lack permissions to use this command."
+        else:
+            log.error("Error handling rss command: %s", error)
+            message = "Ran into an error while processing, try again later."
+
+        try:
+            await interaction.response.send_message(message, ephemeral=True)
+        except discord.InteractionResponded:
+            await interaction.followup.send(message, ephemeral=True)
 
     @app_commands.command()
     @app_commands.describe(
@@ -44,7 +60,7 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
                 time.strftime("%Y-%m-%dT%H:%M:%SZ", feed.entries[2].published_parsed)
             )
         except Exception as error:
-            log.error("Failed to parse feed:", error.__cause__)
+            log.error("Failed to parse feed: %s", error)
             return await itr.followup.send(
                 "Failed to parse feed. Make sure it is a valid RSS/Atom feed."
             )
@@ -57,14 +73,20 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
                 wh_token = existing["webhookToken"]
             else:
                 webhook = await channel.create_webhook(
-                    name=self.bot.user.name, reason="Created for posting RSS events."
+                    name=self.bot.user.name,
+                    reason="Created for posting RSS events.",
                 )
                 wh_id = webhook.id
                 wh_token = str(webhook.token)
-        except Exception as error:
-            log.error("Failed at webhook creation:", error.__cause__)
+        except Forbidden as error:
+            log.error("Webhook creation forbidden: %s", error)
             return await itr.followup.send(
-                "Failed to create a webhook. Make sure I have the correct permission."
+                "Failed to create a webhook. Make sure I have the correct permission to create webhooks."
+            )
+        except Exception as error:
+            log.error("Failed at webhook creation: %s", error)
+            return await itr.followup.send(
+                "Sorry, there was an error creating a new subscription, try again later."
             )
 
         self.collection.insert_one(
@@ -90,18 +112,24 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
         await itr.response.defer()
 
         deleted = self.collection.find_one_and_delete({"_id": ObjectId(feed)})
+        await itr.followup.send(
+            f"Removed `{deleted['rss_source']}` from <#{deleted['channel_id']}>"
+        )
+
         if self.collection.count_documents({"channel_id": deleted["channel_id"]}) < 1:
             try:
                 webhook = await self.bot.fetch_webhook(int(deleted["webhookId"]))
                 await webhook.delete(
                     reason="Webhook is no longer used for posting RSS events."
                 )
-            except Exception as error:
-                log.error("Error deleting the webhook:", error.__cause__)
+            except Forbidden as error:
+                log.error("Webhook deletion forbidden: %s", error)
 
-        await itr.followup.send(
-            f"Removed `{deleted['rss_source']}` from <#{deleted['channel_id']}>"
-        )
+                await itr.followup.send(
+                    f"Unable to cleanup the webhook from <#{deleted['channel_id']}> channel. You may delete it manually."
+                )
+            except Exception as error:
+                log.error("Error deleting the webhook: %s", error)
 
     @app_commands.command()
     async def list(self, itr: discord.Interaction):
@@ -132,26 +160,7 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
 
         await itr.followup.send(embed=embed)
 
-    @add.error
-    @delete.error
-    async def on_error(
-        self,
-        itr: discord.Interaction,
-        error: app_commands.AppCommandError | Exception,
-    ):
-        if isinstance(error, app_commands.MissingPermissions):
-            message = "You lack permissions to use this command."
-        else:
-            log.error("Error handling rss command:", error.__cause__)
-            message = "Ran into an error while processing, try again later."
-
-        try:
-            await itr.response.send_message(message, ephemeral=True)
-        except discord.InteractionResponded:
-            await itr.followup.send(message, ephemeral=True)
-
     @delete.autocomplete("feed")
-    # used to autocomplete feed option in delete command
     async def map_rss(
         self, _: discord.Interaction, search: str
     ) -> typing.List[app_commands.Choice[str]]:

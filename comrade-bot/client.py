@@ -85,7 +85,9 @@ class ComradeBot(commands.Bot):
     async def on_error(
         self, event_method: str, *args: typing.Any, **kwargs: typing.Any
     ):
-        log.error(f"An error occured in {event_method}:\n{traceback.format_exc()}")
+        log.error(
+            f"Client met with an exception handling {event_method}:\n{traceback.format_exc()}"
+        )
 
     async def close(self):
         await super().close()
