@@ -2,8 +2,8 @@ import logging
 import datetime
 import time
 from typing import Any
-from discord import Embed
 from feedparser import parse
+from discord import Embed, HTTPException
 from pymongo.collection import Collection
 from .schema import RSSEntry
 from ..client import ComradeBot
@@ -19,7 +19,7 @@ async def fetcher(bot: ComradeBot):
     # so we can have multiple guilds subscribe to same source, making it easier to fetch/update
 
     collection: Collection[RSSEntry] = bot.db.rssentries
-    records = collection.find({})
+    records = list(collection.find({}))
 
     # get all the unique sources
     sources: set[str] = set()
@@ -38,8 +38,6 @@ async def fetcher(bot: ComradeBot):
             log.info("Fetched %i posts from %s", len(parsed.entries), source)
         except Exception as error:
             log.error("Failed to fetch source (%s): %s", source, error)
-
-    records = collection.find({})
 
     # post the new items and uptate the last update time
     for record in records:
@@ -80,18 +78,28 @@ async def fetcher(bot: ComradeBot):
 
         # only post and update the record if we have new RSS items
         if len(embeds):
-            embeds.reverse()
-            web_hook = await bot.fetch_webhook(int(record["webhookId"]))
-            # send the last 10 in case there are more than 10 embeds
-            await web_hook.send(
-                username=bot.user.name,
-                avatar_url=bot.user.display_avatar.url,
-                embeds=embeds[-10:],
-            )
+            try:
+                embeds.reverse()
+                web_hook = await bot.fetch_webhook(int(record["webhookId"]))
+                # send the last 10 in case there are more than 10 embeds
+                await web_hook.send(
+                    username=bot.user.name,
+                    avatar_url=bot.user.display_avatar.url,
+                    embeds=embeds[-10:],
+                )
 
-            latest_update = datetime.datetime.fromisoformat(
-                time.strftime("%Y-%m-%dT%H:%M:%SZ", source.entries[0].published_parsed)
-            )
-            collection.update_one({"_id": record["_id"]}, {"$set": {"last_update": latest_update}})  # type: ignore
+                latest_update = datetime.datetime.fromisoformat(
+                    time.strftime(
+                        "%Y-%m-%dT%H:%M:%SZ", source.entries[0].published_parsed
+                    )
+                )
 
-        time.sleep(1.0)
+                collection.update_one({"_id": record["_id"]}, {"$set": {"last_update": latest_update}})  # type: ignore
+            except HTTPException as error:
+                log.error("Webhook exception (ID: %s): %s", record["_id"], error)  # type: ignore
+            except Exception as error:
+                log.error("Caught exception at send time: %s", error)
+
+        time.sleep(3.0)
+
+    log.warn("Fetcher run completed: %s", datetime.datetime.now(datetime.UTC))
