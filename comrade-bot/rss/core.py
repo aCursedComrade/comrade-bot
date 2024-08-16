@@ -3,7 +3,7 @@ import datetime
 import time
 from typing import Any
 from feedparser import parse
-from discord import Embed, HTTPException
+from discord import Embed, Forbidden, NotFound
 from pymongo.collection import Collection
 from .schema import RSSEntry
 from ..client import ComradeBot
@@ -95,11 +95,13 @@ async def fetcher(bot: ComradeBot):
                 )
 
                 collection.update_one({"_id": record["_id"]}, {"$set": {"last_update": latest_update}})  # type: ignore
-            except HTTPException as error:
-                log.error("Webhook exception (ID: %s): %s", record["_id"], error)  # type: ignore
+            except Forbidden as error:
+                log.error("Forbidden (ID: %s): %s", record["_id"], error)  # type: ignore
+            except NotFound as error:
+                log.error("NotFound (ID: %s): %s", record["_id"], error)  # type: ignore
             except Exception as error:
                 log.error("Caught exception at send time: %s", error)
 
-        time.sleep(3.0)
+        time.sleep(1.0)
 
     log.warn("Fetcher run completed: %s", datetime.datetime.now(datetime.UTC))
