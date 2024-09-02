@@ -162,10 +162,12 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
 
     @delete.autocomplete("feed")
     async def map_rss(
-        self, _: discord.Interaction, search: str
+        self, itr: discord.Interaction, search: str
     ) -> typing.List[app_commands.Choice[str]]:
         regex = "{}".format(search)
-        records = self.collection.find({"rss_source": {"$regex": regex}})
+        records = self.collection.find(
+            {"rss_source": {"$regex": regex}, "guild_id": itr.guild_id}
+        )
 
         return [
             app_commands.Choice(name=r["rss_source"], value=str(r["_id"]))  # type: ignore
