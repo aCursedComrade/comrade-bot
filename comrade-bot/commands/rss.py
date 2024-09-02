@@ -166,7 +166,7 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
     ) -> typing.List[app_commands.Choice[str]]:
         regex = "{}".format(search)
         records = self.collection.find(
-            {"rss_source": {"$regex": regex}, "guild_id": itr.guild_id}
+            {"rss_source": {"$regex": regex}, "guild_id": str(itr.guild_id)}
         )
 
         return [
