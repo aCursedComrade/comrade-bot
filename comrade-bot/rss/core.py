@@ -104,4 +104,4 @@ async def fetcher(bot: ComradeBot):
 
         time.sleep(1.0)
 
-    log.warn("Fetcher run completed: %s", datetime.datetime.now(datetime.UTC))
+    log.warning("Fetcher run completed: %s", datetime.datetime.now(datetime.UTC))

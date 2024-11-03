@@ -54,7 +54,7 @@ class ComradeBot(commands.Bot):
             log.error("Failed to login as client")
             exit(1)
         except KeyboardInterrupt:
-            log.warn("Exiting...")
+            log.warning("Exiting...")
             exit()
 
     async def load_cogs(self):
@@ -67,7 +67,7 @@ class ComradeBot(commands.Bot):
                 except commands.ExtensionError:
                     log.error(f"Failed to load {file[:-3]}\n{traceback.format_exc()}")
 
-        log.warn("All cogs loaded")
+        log.warning("All cogs loaded")
 
     async def setup_hook(self):
         feedparser.USER_AGENT = os.getenv("USER_AGENT", "Comrade Bot")
@@ -80,7 +80,7 @@ class ComradeBot(commands.Bot):
         #     log.info("Synced global commands")
 
     async def on_ready(self):
-        log.warn(f"Logged in as {self.user} ({self.user.id})")
+        log.warning(f"Logged in as {self.user} ({self.user.id})")
 
     async def on_error(
         self, event_method: str, *args: typing.Any, **kwargs: typing.Any

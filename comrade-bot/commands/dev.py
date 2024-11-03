@@ -1,5 +1,4 @@
 import logging
-import traceback
 import discord
 from ..client import ComradeBot
 from discord.ext import commands
@@ -37,7 +36,7 @@ class Dev(commands.Cog):
     async def sync(self, ctx: commands.Context):
         """Syncs all commands to the global space"""
         await self.bot.tree.sync()
-        log.warn("Commands resynced")
+        log.warning("Commands resynced")
         await ctx.reply("Commands resynced")
 
 
