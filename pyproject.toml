@@ -1,27 +1,28 @@
 [tool.poetry]
-name = "comrade-bot"
-version = "1.0.0"
-description = "Simple Discord bot"
 authors = ["Loshana Aloka <acursed_comrade@proton.me>"]
-readme = "README.md"
+description = "Simple Discord bot"
+name = "comrade-bot"
 package-mode = false
+readme = "README.md"
+version = "1.0.0"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-feedparser = "^6.0"
+audioop-lts = { version = "^0.2", python = ">=3.13" }
 discord-py = "^2.4"
+feedparser = "^6.0"
+pymongo = "^4.11"
+python = "^3.11"
 requests = "^2.32"
-pymongo = "^4.10"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.1"
 
 [tool.pyright]
-venvPath = "/"
-venv = ".venv/"
-include = ["comrade-bot/"]
 exclude = ["**/__pycache__/"]
+include = ["comrade-bot/"]
+venv = ".venv/"
+venvPath = "/"
 
 [build-system]
-requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
