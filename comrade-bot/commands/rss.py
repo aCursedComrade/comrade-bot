@@ -55,9 +55,9 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
         await itr.response.defer()
         # grab the published time of third from the last entry
         try:
-            feed = parse(url)
+            feed = parse(url, agent=self.bot.user_agent)
             last_update = datetime.datetime.fromisoformat(
-                time.strftime("%Y-%m-%dT%H:%M:%SZ", feed.entries[2].published_parsed)
+                time.strftime("%Y-%m-%dT%H:%M:%SZ", feed.entries[2].published_parsed)  # type: ignore
             )
         except Exception as error:
             log.error("Failed to parse feed: %s", error)

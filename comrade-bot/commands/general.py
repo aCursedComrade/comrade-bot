@@ -33,7 +33,7 @@ class General(commands.Cog):
         await itr.response.defer()
 
         head = requests.head(
-            url, headers={"User-Agent": os.environ["USER_AGENT"]}, allow_redirects=True
+            url, headers={"User-Agent": self.bot.user_agent}, allow_redirects=True
         )
         if head.ok:
             await itr.followup.send(head.url)
@@ -50,7 +50,7 @@ class General(commands.Cog):
         response = requests.get(
             "https://icanhazdadjoke.com/",
             headers={
-                "User-Agent": os.environ["USER_AGENT"],
+                "User-Agent": self.bot.user_agent,
                 "Accept": "application/json",
             },
         )
@@ -73,7 +73,7 @@ class General(commands.Cog):
         response = requests.get(
             "https://meme-api.com/gimme",
             headers={
-                "User-Agent": os.environ["USER_AGENT"],
+                "User-Agent": self.bot.user_agent,
                 "Accept": "application/json",
             },
         )
@@ -98,7 +98,7 @@ class General(commands.Cog):
         cursed_data = requests.post(
             "https://uwu.pm/api/v1/uwu",
             headers={
-                "User-Agent": os.environ["USER_AGENT"],
+                "User-Agent": self.bot.user_agent,
                 "Accept": "application/json",
             },
             json={"provider": "uwwwupp", "text": msg.content},

@@ -5,7 +5,6 @@ import datetime
 import typing
 import discord
 import aiohttp
-import feedparser
 from discord.ext import commands
 from pymongo import MongoClient
 
@@ -22,10 +21,14 @@ class ComradeBot(commands.Bot):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any):
         self.mongo = MongoClient(os.environ["DB_URI"])
         self.db = self.mongo[os.environ["DB_NAME"]]
+        self.user_agent = os.environ.get(
+            "USER_AGENT",
+            "linux:comrade_bot:v2 (https://github.com/aCursedComrade/comrade-bot)",
+        )
 
         intents = discord.Intents.none()
         intents.guilds = True
-        intents.guild_messages = True
+        intents.guild_messages = False
         intents.dm_messages = True
         intents.webhooks = True
 
@@ -70,8 +73,6 @@ class ComradeBot(commands.Bot):
         log.warning("All cogs loaded")
 
     async def setup_hook(self):
-        feedparser.USER_AGENT = os.getenv("USER_AGENT", "Comrade Bot")
-
         self.client = aiohttp.ClientSession()
         await self.load_cogs()
         # if not self.synced:

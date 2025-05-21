@@ -32,7 +32,7 @@ async def fetcher(bot: ComradeBot):
     posts: dict[str, Any] = {}
     for source in sources:
         try:
-            parsed = parse(source)
+            parsed = parse(source, agent=bot.user_agent)
             posts[source] = parsed
 
             log.info("Fetched %i posts from %s", len(parsed.entries), source)
@@ -45,7 +45,6 @@ async def fetcher(bot: ComradeBot):
             record["last_update"].strftime("%Y-%m-%dT%H:%M:%SZ")
         )
         source = posts[record["rss_source"]]
-
         embeds: list[Embed] = []
 
         # filter out the new ones and create embeds
@@ -58,17 +57,18 @@ async def fetcher(bot: ComradeBot):
                 embed = Embed(
                     title=item.get("title", "(No title)"),
                     url=item.get("link", None),
-                    description=(
-                        remove_html(item.get("description", "(No description)"))
-                        if "description" in item
-                        else remove_html(item.get("summary", "(No description)"))
-                    ),
+                    description=remove_html(item.get("summary", "(No description)")),
                     timestamp=post_date,
                 )
-                embed.set_thumbnail(url=item.image.href if "image" in item else None)
-                embed.set_author(
-                    name=source.feed.title,
-                    url=source.feed.link,
+                embed.set_thumbnail(
+                    url=(
+                        item.media_thumbnail[0]["url"]
+                        if "media_thumbnail" in item
+                        else None
+                    )
+                )
+                embed.set_footer(
+                    text=source.feed.title,
                     icon_url=source.feed.image.href if "image" in source.feed else None,
                 )
 
@@ -81,11 +81,12 @@ async def fetcher(bot: ComradeBot):
             try:
                 embeds.reverse()
                 web_hook = await bot.fetch_webhook(int(record["webhookId"]))
-                # send the last 10 in case there are more than 10 embeds
                 await web_hook.send(
-                    username=bot.user.name,
+                    username=bot.user.display_name,
                     avatar_url=bot.user.display_avatar.url,
-                    embeds=embeds[-10:],
+                    embeds=embeds[
+                        -10:
+                    ],  # send the last 10 in case there are more than 10 embeds
                 )
 
                 latest_update = datetime.datetime.fromisoformat(

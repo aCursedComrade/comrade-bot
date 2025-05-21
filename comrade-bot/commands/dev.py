@@ -2,6 +2,7 @@ import logging
 import discord
 from ..client import ComradeBot
 from discord.ext import commands
+from ..rss.core import fetcher
 
 log = logging.getLogger(__name__)
 
@@ -26,10 +27,12 @@ class Dev(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def dev(self, ctx: commands.Context):
-        """Help menu for owners/devs"""
-        # TODO dev menu
-        await ctx.reply("TODO")
+    async def fetch_rss(self, ctx: commands.Context):
+        """Manually invoke the fetcher"""
+        followup = await ctx.reply("Invoking fetcher...")
+        log.warning("Manually invoking RSS fetcher")
+        await fetcher(self.bot)
+        await followup.reply("Fetcher completed successfully")
 
     @commands.command()
     @commands.is_owner()
