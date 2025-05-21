@@ -7,10 +7,9 @@ readme = "README.md"
 version = "1.0.0"
 
 [tool.poetry.dependencies]
-audioop-lts = { version = "^0.2", python = ">=3.13" }
-discord-py = "^2.4"
-feedparser = "^6.0"
-pymongo = "^4.11"
+discord-py = "2.5.2"
+feedparser = "6.0.11"
+pymongo = "4.13"
 python = "^3.11"
 requests = "^2.32"
 
