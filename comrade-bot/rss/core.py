@@ -26,8 +26,6 @@ async def fetcher(bot: ComradeBot):
     for record in records:
         sources.add(record["rss_source"])
 
-    log.info(sources)
-
     # fetch the sources
     posts: dict[str, Any] = {}
     for source in sources:
@@ -105,4 +103,4 @@ async def fetcher(bot: ComradeBot):
 
         time.sleep(1.0)
 
-    log.warning("Fetcher run completed: %s", datetime.datetime.now(datetime.UTC))
+    log.info("Fetcher run completed: %s", datetime.datetime.now(datetime.UTC))

@@ -70,7 +70,7 @@ class ComradeBot(commands.Bot):
                 except commands.ExtensionError:
                     log.error(f"Failed to load {file[:-3]}\n{traceback.format_exc()}")
 
-        log.warning("All cogs loaded")
+        log.info("All cogs loaded")
 
     async def setup_hook(self):
         self.client = aiohttp.ClientSession()

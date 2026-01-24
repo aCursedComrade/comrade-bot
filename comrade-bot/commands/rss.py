@@ -112,6 +112,11 @@ class RSSHelper(commands.GroupCog, group_name="rss"):
         await itr.response.defer()
 
         deleted = self.collection.find_one_and_delete({"_id": ObjectId(feed)})
+
+        if deleted is None:
+            await itr.followup.send("Ran into an error while deleting entry")
+            return
+
         await itr.followup.send(
             f"Removed `{deleted['rss_source']}` from <#{deleted['channel_id']}>"
         )

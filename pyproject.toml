@@ -7,9 +7,9 @@ readme = "README.md"
 version = "1.0.0"
 
 [tool.poetry.dependencies]
-discord-py = "2.5.2"
-feedparser = "6.0.11"
-pymongo = "4.13"
+discord-py = "2.6.4"
+feedparser = "6.0.12"
+pymongo = "4.16"
 python = "^3.11"
 requests = "^2.32"
 
